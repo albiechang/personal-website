@@ -1,5 +1,16 @@
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
+  eleventyConfig.addPassthroughCopy({
+    "src/_data/scenarioComparison.json": "assets/data/visualizations/scenario-comparison.json"
+  });
+
+  eleventyConfig.addFilter("projectDate", (value) =>
+    new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC"
+    }).format(new Date(value))
+  );
 
   eleventyConfig.addCollection("projects", (collectionApi) =>
     collectionApi

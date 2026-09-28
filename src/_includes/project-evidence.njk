@@ -1,0 +1,43 @@
+{% macro prose(content) %}
+  <div class="project-body">{{ content | safe }}</div>
+{% endmacro %}
+
+{% macro figure(src, alt, caption) %}
+  <figure class="evidence-figure">
+    <img src="{{ src | url }}" alt="{{ alt }}" loading="lazy">
+    <figcaption>{{ caption }}</figcaption>
+  </figure>
+{% endmacro %}
+
+{% macro gallery(items, label) %}
+  <div class="evidence-gallery" aria-label="{{ label }}">
+    {% for item in items %}<figure><img src="{{ item.src | url }}" alt="{{ item.alt }}" loading="lazy"><figcaption>{{ item.caption }}</figcaption></figure>{% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro video(poster, captions, transcript) %}
+  <section class="evidence-video" aria-labelledby="video-heading">
+    <h2 id="video-heading">Video evidence placeholder</h2>
+    <video controls preload="none" poster="{{ poster | url }}" aria-describedby="video-transcript">
+      <track kind="captions" src="{{ captions | url }}" srclang="en" label="English" default>
+      Video playback is not included in this demonstration. The transcript remains available below.
+    </video>
+    <details id="video-transcript"><summary>Video transcript</summary><p>{{ transcript }}</p></details>
+  </section>
+{% endmacro %}
+
+{% macro diagram(label, caption) %}
+  <figure class="evidence-diagram">
+    <svg viewBox="0 0 720 240" role="img" aria-label="{{ label }}">{{ caller() }}</svg>
+    <figcaption>{{ caption }}</figcaption>
+  </figure>
+{% endmacro %}
+
+{% macro dataTable(title, label, headers, keys, rows) %}
+  <div class="evidence-data">
+    <h2>{{ title }}</h2>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="{{ label }}">
+      <table><thead><tr>{% for header in headers %}<th>{{ header }}</th>{% endfor %}</tr></thead><tbody>{% for row in rows %}<tr>{% for key in keys %}{% if loop.first %}<th>{{ row[key] }}</th>{% else %}<td>{{ row[key] }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody></table>
+    </div>
+  </div>
+{% endmacro %}

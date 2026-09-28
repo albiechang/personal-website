@@ -1,0 +1,7 @@
+{
+  "scenarios": [
+    { "id": "a", "name": "Scenario A", "signal": "Steady", "planningNote": "Demonstration value", "fallback": "a labeled demonstration state" },
+    { "id": "b", "name": "Scenario B", "signal": "Variable", "planningNote": "Demonstration value", "fallback": "a labeled demonstration state" },
+    { "id": "c", "name": "Scenario C", "signal": "Constrained", "planningNote": "Demonstration value", "fallback": "a labeled demonstration state" }
+  ]
+}

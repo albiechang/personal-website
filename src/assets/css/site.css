@@ -54,6 +54,7 @@ main { overflow: hidden; }
 .project-card { display: block; color: var(--color-text-inverse); border: 1px solid var(--color-border); border-radius: var(--radius-small); overflow: hidden; text-decoration: none; }
 .project-card__media { position: relative; aspect-ratio: 4 / 3; margin: 0; overflow: hidden; background: var(--color-surface-soft); }
 .project-card img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 180ms ease; }
+.project-card__media-placeholder { width: 100%; height: 100%; display: grid; place-items: center; padding: 2rem; color: var(--color-text-muted); background: var(--color-surface-soft); font-family: var(--font-mono); font-size: 0.78rem; text-align: center; }
 .project-card__media::after { content: ""; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, var(--color-media-overlay)); }
 .project-card__title, .project-card__summary { position: absolute; z-index: 1; right: 1rem; left: 1rem; margin: 0; }
 .project-card__status { position: absolute; z-index: 2; top: 0.75rem; right: 0.75rem; padding: 0.2rem 0.5rem; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-small); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
@@ -128,7 +129,7 @@ main { overflow: hidden; }
   .project-card__summary { display: none; }
 }
 
-@media (min-width: 48.01rem) {
+@media (hover: hover) and (pointer: fine) and (min-width: 48.01rem) {
   .project-card:focus-visible img { transform: scale(1.025); }
   .project-card:focus-visible .project-card__title { bottom: auto; top: 1rem; }
   .project-card:focus-visible .project-card__summary { display: block; opacity: 1; transform: translateY(0); }

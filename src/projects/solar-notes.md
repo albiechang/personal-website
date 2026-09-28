@@ -17,22 +17,9 @@ media:
   alt: Abstract sun above a simple solar array
   focalPoint: 50% 35%
 description: A compact demonstration Project with optional collaborators and links.
+customComposition: solar-notes
 ---
 
-## One figure, then context
-
-<figure class="evidence-figure">
-  <img src="{{ '/assets/images/project-solar-notes.svg' | url }}" alt="Abstract sun above a simple solar array" loading="lazy">
-  <figcaption>Demonstration artwork stands in for future verified Project evidence.</figcaption>
-</figure>
+## A short note before the evidence
 
 This short composition intentionally differs from the longer field-notes narrative.
-
-<section class="evidence-video" aria-labelledby="video-heading">
-  <h2 id="video-heading">Video evidence placeholder</h2>
-  <video controls preload="none" poster="{{ '/assets/images/project-solar-notes.svg' | url }}" aria-describedby="video-transcript">
-    <track kind="captions" src="{{ '/assets/media/demo-captions.vtt' | url }}" srclang="en" label="English" default>
-    Video playback is not included in this demonstration. The transcript remains available below.
-  </video>
-  <details id="video-transcript"><summary>Video transcript</summary><p>This demonstration reserves a transcript path for future verified video evidence. No Project result is claimed.</p></details>
-</section>

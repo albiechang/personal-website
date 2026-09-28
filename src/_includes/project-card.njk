@@ -1,6 +1,10 @@
 <a class="project-card" href="{{ project.url | url }}" aria-label="{{ project.data.title }} — {{ project.data.summary }}">
   <figure class="project-card__media">
-    <img src="{{ project.data.media.src | url }}" alt="{{ project.data.media.alt }}" loading="lazy" style="object-position: {{ project.data.media.focalPoint }}">
+    {% if project.data.media %}
+      <img src="{{ project.data.media.src | url }}" alt="{{ project.data.media.alt }}" loading="lazy"{% if project.data.media.focalPoint %} style="object-position: {{ project.data.media.focalPoint }}"{% endif %}>
+    {% else %}
+      <div class="project-card__media-placeholder" role="img" aria-label="Representative media pending for {{ project.data.title }}">Representative media pending</div>
+    {% endif %}
     <p class="project-card__summary">{{ project.data.summary }}</p>
     {% if project.data.status == "ongoing" %}<span class="project-card__status">Ongoing</span>{% endif %}
     <figcaption class="project-card__title">{{ project.data.title }}</figcaption>

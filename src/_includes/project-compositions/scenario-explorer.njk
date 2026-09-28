@@ -1,38 +1,27 @@
+{% import "project-evidence.njk" as evidence %}
+{% set galleryItems = [
+  { src: '/assets/images/project-grid-scenarios.svg', alt: 'Three connected grid scenarios', caption: 'System relationship' },
+  { src: '/assets/images/project-water-notebook.svg', alt: 'Water path and three design checkpoints', caption: 'Comparison evidence' }
+] %}
+
 <div class="project-composition project-composition--scenario-explorer">
-  <div class="project-body">{{ content | safe }}</div>
+  {{ evidence.prose(content) }}
 
-  <figure class="evidence-diagram">
-    <svg viewBox="0 0 720 240" role="img" aria-labelledby="scenario-diagram-title scenario-diagram-desc">
-      <title id="scenario-diagram-title">Placeholder scenario relationship</title>
-      <desc id="scenario-diagram-desc">Three named scenarios connect to one shared decision point.</desc>
-      <g class="diagram-lines"><path d="M90 45 360 120M90 120h270M90 195l270-75"/></g>
-      <g class="diagram-nodes"><circle cx="90" cy="45" r="24"/><circle cx="90" cy="120" r="24"/><circle cx="90" cy="195" r="24"/><rect x="335" y="88" width="210" height="64" rx="8"/></g>
-      <g class="diagram-labels"><text x="130" y="51">Scenario A</text><text x="130" y="126">Scenario B</text><text x="130" y="201">Scenario C</text><text x="360" y="126">Shared decision</text></g>
-    </svg>
-    <figcaption>A reusable diagram primitive keeps meaning in labels as well as color.</figcaption>
-  </figure>
+  {% call evidence.diagram('Three named scenarios connect to one shared decision point', 'A reusable diagram primitive keeps meaning in labels as well as color.') %}
+    <g class="diagram-lines"><path d="M90 45 360 120M90 120h270M90 195l270-75"/></g>
+    <g class="diagram-nodes"><circle cx="90" cy="45" r="24"/><circle cx="90" cy="120" r="24"/><circle cx="90" cy="195" r="24"/><rect x="335" y="88" width="210" height="64" rx="8"/></g>
+    <g class="diagram-labels">{% for scenario in scenarioComparison.scenarios %}<text x="130" y="{{ 51 + (loop.index0 * 75) }}">{{ scenario.name }}</text>{% endfor %}<text x="360" y="126">Shared decision</text></g>
+  {% endcall %}
 
-  <div class="evidence-gallery" aria-label="Scenario evidence gallery">
-    <figure><img src="{{ '/assets/images/project-grid-scenarios.svg' | url }}" alt="Three connected grid scenarios" loading="lazy"><figcaption>System relationship</figcaption></figure>
-    <figure><img src="{{ '/assets/images/project-water-notebook.svg' | url }}" alt="Water path and three design checkpoints" loading="lazy"><figcaption>Comparison evidence</figcaption></figure>
-  </div>
+  {{ evidence.gallery(galleryItems, 'Scenario evidence gallery') }}
 
-  <div class="evidence-data">
-    <h2>Static scenario comparison</h2>
-    <div class="table-scroll" tabindex="0" role="region" aria-label="Placeholder scenario comparison table">
-      <table><thead><tr><th>Scenario</th><th>Reliability signal</th><th>Planning note</th></tr></thead><tbody><tr><th>A</th><td>Steady</td><td>Demonstration value</td></tr><tr><th>B</th><td>Variable</td><td>Demonstration value</td></tr><tr><th>C</th><td>Constrained</td><td>Demonstration value</td></tr></tbody></table>
-    </div>
-  </div>
+  {{ evidence.dataTable('Static scenario comparison', 'Placeholder scenario comparison table', ['Scenario', 'Reliability signal', 'Planning note'], ['name', 'signal', 'planningNote'], scenarioComparison.scenarios) }}
 
   <section class="project-visualization" data-project-visualization="{{ visualization.id }}" data-source="{{ visualization.data | url }}" data-state="fallback" role="region" aria-labelledby="visualization-title">
     <p class="eyebrow">Optional Project Visualization</p>
     <h2 id="visualization-title">Placeholder grid scenario comparison</h2>
     <p>This self-contained example enhances only when it approaches the viewport. The complete static comparison stays available.</p>
-    <ul class="visualization-fallback">
-      <li><strong>Scenario A — Steady</strong>: a labeled demonstration state.</li>
-      <li><strong>Scenario B — Variable</strong>: a labeled demonstration state.</li>
-      <li><strong>Scenario C — Constrained</strong>: a labeled demonstration state.</li>
-    </ul>
+    <ul class="visualization-fallback">{% for scenario in scenarioComparison.scenarios %}<li><strong>{{ scenario.name }} — {{ scenario.signal }}</strong>: {{ scenario.fallback }}.</li>{% endfor %}</ul>
     <div class="visualization-controls" hidden aria-label="Choose a scenario to emphasize"></div>
     <p class="visualization-output" aria-live="polite"></p>
     <p class="visualization-status" aria-live="polite"></p>
