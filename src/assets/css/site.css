@@ -65,7 +65,7 @@ main { overflow: hidden; }
 .education-fact, .education-stage { padding: clamp(1.25rem, 3vw, 2rem); background: var(--color-surface); border: 1px solid var(--color-border); border-top-width: 4px; }
 .education-fact--carnegie-red, .education-stage--carnegie-red { border-top-color: var(--color-accent); }
 .education-fact--uc-san-diego-navy, .education-stage--uc-san-diego-navy { border-top-color: var(--color-context); }
-.education-fact h3, .education-stage h3 { margin-top: 0; color: var(--color-context); font-size: 1.4rem; }
+.education-fact h3, .education-stage h3 { margin-top: 0; color: var(--color-text); font-size: 1.4rem; }
 .education-fact dl { margin-bottom: 0; }
 .education-fact dl div { display: grid; grid-template-columns: minmax(5rem, 0.3fr) 1fr; gap: 1rem; padding-block: 0.65rem; border-top: 1px solid var(--color-border); }
 .education-fact dt { color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; }
