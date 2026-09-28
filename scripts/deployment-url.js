@@ -1,5 +1,5 @@
 function normalizePathPrefix(value = "/") {
-  return value === "/" ? "" : `/${value.replace(/^\/+|\/+$/g, "")}`;
+  return !value || value === "/" ? "" : `/${value.replace(/^\/+|\/+$/g, "")}`;
 }
 
 function createDeploymentUrl({ siteUrl = "http://localhost:8080", pathPrefix = "/" } = {}) {

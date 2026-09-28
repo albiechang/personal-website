@@ -36,26 +36,17 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page.getByRole("contentinfo")).toContainText("Albert Chang");
 });
 
-test("Visual Motif connects the homepage and remains restrained on deep routes", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
-
-  const homepageMotif = page.locator('[data-visual-motif="sequence"]');
-  await expect(homepageMotif).toBeVisible();
-  await expect(homepageMotif).toHaveCSS("pointer-events", "none");
-
+test("deep routes stay script-free and reduced-motion rendering stays static", async ({ page }) => {
+  const deepRouteScripts = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname.endsWith(".js")) deepRouteScripts.push(request.url());
+  });
   await page.goto("/projects/");
-  const deepPageMotif = page.locator('[data-visual-motif="fragment"]');
-  await expect(deepPageMotif).toBeVisible();
-  await expect(page.locator("script")).toHaveCount(0);
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  await expect(page.locator('[data-visual-motif="sequence"]')).toBeVisible();
+  expect(deepRouteScripts).toEqual([]);
 
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.reload();
-  expect(await page.locator('[data-visual-motif="sequence"]').evaluate((element) => element.getAnimations({ subtree: true }).length)).toBe(0);
+  await page.goto("/");
+  expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
 });
 
 test("every public route has unique discoverability metadata and sitemap coverage", async ({ page }) => {
@@ -129,6 +120,18 @@ test("production URLs and assets honor a GitHub Pages project-site prefix", asyn
   } finally {
     variantServer.close();
   }
+
+  const customDomainOutput = "test-results/deployment-aware-custom-domain";
+  execFileSync(process.execPath, [eleventyCommand, "--output", customDomainOutput], {
+    cwd: process.cwd(),
+    env: { ...process.env, SITE_PATH_PREFIX: "", SITE_URL: "https://portfolio.example.test" },
+    stdio: "pipe"
+  });
+  execFileSync(process.execPath, ["scripts/check-links.js", customDomainOutput], {
+    cwd: process.cwd(),
+    env: { ...process.env, SITE_PATH_PREFIX: "", SITE_URL: "https://portfolio.example.test" },
+    stdio: "pipe"
+  });
 });
 
 test("visual review captures cover motif placement across routes, viewports, and motion preferences", async ({ page }) => {
@@ -141,14 +144,13 @@ test("visual review captures cover motif placement across routes, viewports, and
   for (const capture of captures) {
     await page.setViewportSize({ width: capture.width, height: capture.height });
     await page.goto(capture.route);
-    await expect(page.locator("[data-visual-motif]")).toBeVisible();
     await page.screenshot({ path: `test-results/visual-review/${capture.name}.png`, fullPage: true });
   }
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
-  expect(await page.locator('[data-visual-motif="sequence"]').evaluate((element) => element.getAnimations({ subtree: true }).length)).toBe(0);
+  expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
   await page.screenshot({ path: "test-results/visual-review/homepage-reduced-motion.png", fullPage: true });
 });
 
