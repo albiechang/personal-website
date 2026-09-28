@@ -36,6 +36,152 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page.getByRole("contentinfo")).toContainText("Albert Chang");
 });
 
+test("Visual Motif connects the homepage and remains restrained on deep routes", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+
+  const homepageMotif = page.locator('[data-visual-motif="sequence"]');
+  await expect(homepageMotif).toBeVisible();
+  await expect(homepageMotif.locator(".visual-motif__line")).toHaveCount(1);
+  await expect(homepageMotif.locator(".visual-motif__node")).toHaveCount(5);
+  await expect(homepageMotif).toHaveCSS("pointer-events", "none");
+
+  await page.goto("/projects/");
+  const deepPageMotif = page.locator('[data-visual-motif="fragment"]');
+  await expect(deepPageMotif).toBeVisible();
+  await expect(deepPageMotif.locator(".visual-motif__node")).toHaveCount(2);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.locator('[data-visual-motif="sequence"] .visual-motif__node')).toHaveCount(5);
+  await expect(page.locator('[data-visual-motif="sequence"]')).toHaveCSS("opacity", "0.42");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator(".visual-motif__energized")).toHaveCSS("animation-name", "none");
+});
+
+test("every public route has unique discoverability metadata and sitemap coverage", async ({ page }) => {
+  const routes = [
+    "/",
+    "/projects/",
+    "/education/",
+    "/projects/grid-resilience-scenario-explorer/",
+    "/projects/renewable-infrastructure-field-notes/",
+    "/projects/solar-notes/",
+    "/projects/water-systems-design-notebook/",
+    "/projects/minimal-project-record/"
+  ];
+  const titles = new Set();
+  const descriptions = new Set();
+
+  for (const route of routes) {
+    await page.goto(route);
+    const title = await page.title();
+    const description = await page.locator('meta[name="description"]').getAttribute("content");
+    titles.add(title);
+    descriptions.add(description);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `http://localhost:8080${route}`);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", title);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", description);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", `http://localhost:8080${route}`);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary");
+  }
+
+  expect(titles.size).toBe(routes.length);
+  expect(descriptions.size).toBe(routes.length);
+
+  const sitemapResponse = await page.request.get("/sitemap.xml");
+  expect(sitemapResponse.ok()).toBe(true);
+  const sitemap = await sitemapResponse.text();
+  for (const route of routes) expect(sitemap).toContain(`<loc>http://localhost:8080${route}</loc>`);
+});
+
+test("production URLs and assets honor a GitHub Pages project-site prefix", async ({ page }) => {
+  const outputRoot = "test-results/deployment-aware";
+  const output = `${outputRoot}/portfolio`;
+  const eleventyCommand = path.resolve(path.dirname(require.resolve("@11ty/eleventy")), "..", "cmd.cjs");
+  execFileSync(process.execPath, [eleventyCommand, "--output", output], {
+    cwd: process.cwd(),
+    env: {
+      ...process.env,
+      SITE_PATH_PREFIX: "/portfolio/",
+      SITE_URL: "https://portfolio.example.test"
+    },
+    stdio: "pipe"
+  });
+  const variantServer = httpServer.createServer({ root: outputRoot, cache: -1 });
+  await new Promise((resolve) => variantServer.listen(4175, "127.0.0.1", resolve));
+
+  try {
+    await page.goto("http://127.0.0.1:4175/portfolio/");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://portfolio.example.test/portfolio/");
+    await expect(page.locator('link[rel="stylesheet"]').last()).toHaveAttribute("href", "/portfolio/assets/css/site.css");
+    await expect(page.getByRole("link", { name: "View all projects" })).toHaveAttribute("href", "/portfolio/projects/");
+    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Experience" })).toHaveAttribute("href", "/portfolio/#experience");
+    await expect(page.locator('script[src$="visual-motif.js"]')).toHaveAttribute("src", "/portfolio/assets/js/visual-motif.js");
+
+    const sitemap = await (await page.request.get("http://127.0.0.1:4175/portfolio/sitemap.xml")).text();
+    expect(sitemap).toContain("<loc>https://portfolio.example.test/portfolio/projects/</loc>");
+    expect(sitemap).not.toContain("portfolio/portfolio");
+  } finally {
+    variantServer.close();
+  }
+});
+
+test("visual review captures cover motif placement across routes, viewports, and motion preferences", async ({ page }) => {
+  const captures = [
+    { name: "homepage-desktop", route: "/", width: 1440, height: 1000 },
+    { name: "projects-tablet", route: "/projects/", width: 900, height: 900 },
+    { name: "education-mobile", route: "/education/", width: 390, height: 844 }
+  ];
+
+  for (const capture of captures) {
+    await page.setViewportSize({ width: capture.width, height: capture.height });
+    await page.goto(capture.route);
+    await expect(page.locator("[data-visual-motif]")).toBeVisible();
+    await page.screenshot({ path: `test-results/visual-review/${capture.name}.png`, fullPage: true });
+  }
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  await expect(page.locator(".visual-motif__energized")).toHaveCSS("transition-duration", "0s");
+  await page.screenshot({ path: "test-results/visual-review/homepage-reduced-motion.png", fullPage: true });
+});
+
+test("editorial palette keeps text and controls readable without color-only states", async ({ page }) => {
+  await page.goto("/");
+
+  const contrastResults = await page.evaluate(() => {
+    const channels = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+    const luminance = (value) => {
+      const normalized = channels(value).map((channel) => {
+        const ratio = channel / 255;
+        return ratio <= 0.04045 ? ratio / 12.92 : ((ratio + 0.055) / 1.055) ** 2.4;
+      });
+      return (0.2126 * normalized[0]) + (0.7152 * normalized[1]) + (0.0722 * normalized[2]);
+    };
+    const ratio = (foreground, background) => {
+      const values = [luminance(foreground), luminance(background)].sort((left, right) => right - left);
+      return (values[0] + 0.05) / (values[1] + 0.05);
+    };
+    return [".intro", ".eyebrow", ".button", ".section-shell h2", ".contact-rail a"].map((selector) => {
+      const element = document.querySelector(selector);
+      const style = getComputedStyle(element);
+      let background = style.backgroundColor;
+      if (background === "rgba(0, 0, 0, 0)") background = getComputedStyle(document.body).backgroundColor;
+      return { selector, ratio: ratio(style.color, background) };
+    });
+  });
+
+  for (const result of contrastResults) expect(result.ratio, result.selector).toBeGreaterThanOrEqual(4.5);
+  await expect(page.getByText("Current entry placeholder")).toBeVisible();
+  const projectsLink = page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Projects" });
+  await projectsLink.focus();
+  await expect(projectsLink).toHaveCSS("outline-style", "solid");
+});
+
 test("Experience Timeline is newest-first, complete without scripts, and respects reduced motion", async ({ page, browser }) => {
   await page.goto("/");
 

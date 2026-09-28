@@ -5,9 +5,10 @@
   "description": "Albert Chang's Eleventy-powered professional portfolio.",
   "scripts": {
     "dev": "eleventy --serve",
-    "build": "eleventy",
+    "build": "node scripts/clean-output.js && eleventy",
+    "check:links": "node scripts/check-links.js",
     "serve:test": "http-server _site -p 4173 -c-1",
-    "test:acceptance": "npm run build && playwright test",
+    "test:acceptance": "npm run build && npm run check:links && playwright test",
     "test": "npm run test:acceptance"
   },
   "devDependencies": {

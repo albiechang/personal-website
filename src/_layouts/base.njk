@@ -1,10 +1,22 @@
 <!doctype html>
 <html lang="en">
   <head>
+    {% set pageDescription = description or summary or 'Albert Chang’s Professional Record in community-centered engineering and renewable-energy development.' %}
+    {% set pageTitle = title + ' · ' + site.name %}
+    {% set canonical = page.url | canonicalUrl %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ description or 'Albert Chang’s Professional Record in community-centered engineering and renewable-energy development.' }}">
-    <title>{{ title }} · {{ site.name }}</title>
+    <meta name="description" content="{{ pageDescription }}">
+    <title>{{ pageTitle }}</title>
+    <link rel="canonical" href="{{ canonical }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ site.name }}">
+    <meta property="og:title" content="{{ pageTitle }}">
+    <meta property="og:description" content="{{ pageDescription }}">
+    <meta property="og:url" content="{{ canonical }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ pageTitle }}">
+    <meta name="twitter:description" content="{{ pageDescription }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,7 +35,10 @@
       </nav>
     </header>
 
-    <main id="main-content">{{ content | safe }}</main>
+    <main id="main-content">
+      {% include "visual-motif.njk" %}
+      <div class="page-content">{{ content | safe }}</div>
+    </main>
 
     <aside class="contact-rail" aria-label="Contact Albert Chang">
       <a href="mailto:{{ site.email }}" aria-label="Email Albert Chang">Email</a>
@@ -37,5 +52,6 @@
     </footer>
     {% if visualization %}<script type="module" src="{{ visualization.module | url }}"></script>{% endif %}
     {% if pageModule %}<script type="module" src="{{ pageModule | url }}"></script>{% endif %}
+    <script type="module" src="{{ '/assets/js/visual-motif.js' | url }}"></script>
   </body>
 </html>

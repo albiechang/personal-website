@@ -1,4 +1,7 @@
 module.exports = function (eleventyConfig) {
+  const pathPrefix = process.env.SITE_PATH_PREFIX || "/";
+  const siteOrigin = process.env.SITE_URL || "http://localhost:8080";
+
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy({
     "src/_data/scenarioComparison.json": "assets/data/visualizations/scenario-comparison.json"
@@ -12,6 +15,12 @@ module.exports = function (eleventyConfig) {
     }).format(new Date(value))
   );
 
+  eleventyConfig.addFilter("canonicalUrl", (value) => {
+    const prefix = pathPrefix === "/" ? "" : `/${pathPrefix.replace(/^\/+|\/+$/g, "")}`;
+    const route = value === "/" ? "/" : `/${String(value).replace(/^\/+/, "")}`;
+    return new URL(`${prefix}${route}`, siteOrigin).href;
+  });
+
   eleventyConfig.addCollection("projects", (collectionApi) =>
     collectionApi
       .getFilteredByGlob("./src/projects/*.md")
@@ -19,7 +28,7 @@ module.exports = function (eleventyConfig) {
   );
 
   return {
-    pathPrefix: process.env.SITE_PATH_PREFIX || "/",
+    pathPrefix,
     dir: {
       input: "src",
       includes: "_includes",

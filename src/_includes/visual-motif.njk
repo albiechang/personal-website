@@ -1,0 +1,18 @@
+{% if page.url == '/' %}
+  <svg class="visual-motif visual-motif--sequence" data-visual-motif="sequence" viewBox="0 0 100 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="visual-motif__line" pathLength="100" d="M4 0 V150 Q4 170 8 180 V365 Q8 385 4 395 V585 Q4 605 8 615 V805 Q8 825 4 835 V1000" />
+    <path class="visual-motif__energized" pathLength="100" d="M4 0 V150 Q4 170 8 180 V365 Q8 385 4 395 V585 Q4 605 8 615 V805 Q8 825 4 835 V1000" />
+    <circle class="visual-motif__node" cx="4" cy="130" r="0.65" />
+    <circle class="visual-motif__node" cx="8" cy="330" r="0.65" />
+    <circle class="visual-motif__node visual-motif__node--energized" cx="4" cy="535" r="0.8" />
+    <circle class="visual-motif__node" cx="8" cy="750" r="0.65" />
+    <circle class="visual-motif__node" cx="4" cy="940" r="0.65" />
+  </svg>
+{% else %}
+  <svg class="visual-motif visual-motif--fragment" data-visual-motif="fragment" viewBox="0 0 100 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="visual-motif__line" d="M96 0 V95 Q96 112 92 120 V300" />
+    <path class="visual-motif__energized" d="M96 0 V95 Q96 112 92 120 V170" />
+    <circle class="visual-motif__node visual-motif__node--energized" cx="96" cy="72" r="0.8" />
+    <circle class="visual-motif__node" cx="92" cy="218" r="0.65" />
+  </svg>
+{% endif %}
