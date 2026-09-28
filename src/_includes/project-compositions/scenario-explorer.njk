@@ -22,7 +22,7 @@
     <h2 id="visualization-title">Placeholder grid scenario comparison</h2>
     <p>This self-contained example enhances only when it approaches the viewport. The complete static comparison stays available.</p>
     <ul class="visualization-fallback">{% for scenario in scenarioComparison.scenarios %}<li><strong>{{ scenario.name }} — {{ scenario.signal }}</strong>: {{ scenario.fallback }}.</li>{% endfor %}</ul>
-    <div class="visualization-controls" hidden aria-label="Choose a scenario to emphasize"></div>
+    <div class="visualization-controls" role="group" hidden aria-label="Choose a scenario to emphasize"></div>
     <p class="visualization-output" aria-live="polite"></p>
     <p class="visualization-status" aria-live="polite"></p>
     <noscript><p>The interactive comparison is unavailable because scripting is disabled. The static scenario list above contains the same information.</p></noscript>

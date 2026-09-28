@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const AxeBuilder = require("@axe-core/playwright").default;
 const { execFileSync } = require("node:child_process");
 const path = require("node:path");
 const httpServer = require("http-server");
@@ -34,6 +35,22 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page.getByRole("link", { name: "Email Albert Chang" })).toHaveAttribute("href", /^mailto:/);
   await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toHaveAttribute("href", /^https:/);
   await expect(page.getByRole("contentinfo")).toContainText("Albert Chang");
+});
+
+test("representative public routes have no automatically detectable accessibility violations", async ({ page }) => {
+  const routes = [
+    "/",
+    "/projects/",
+    "/education/",
+    "/projects/grid-resilience-scenario-explorer/",
+    "/projects/solar-notes/"
+  ];
+
+  for (const route of routes) {
+    await page.goto(route);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations, `${route}: ${JSON.stringify(results.violations, null, 2)}`).toEqual([]);
+  }
 });
 
 test("deep routes stay script-free and reduced-motion rendering stays static", async ({ page }) => {
@@ -490,4 +507,42 @@ test("keyboard and responsive visitors retain clear navigation and Project acces
   await expect(touchKeyboardCard).toBeFocused();
   await expect(touchSummary).toBeHidden();
   await touchContext.close();
+});
+
+test("compact contact controls remain persistent without covering document content", async ({ page }) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 900, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto(`/education/?viewport=${viewport.width}`);
+    await page.evaluate(() => window.scrollTo(0, 0));
+
+    const banner = page.getByRole("banner");
+    const contactRail = page.getByRole("complementary", { name: "Contact Albert Chang" });
+    await expect(contactRail).toBeInViewport();
+    expect(await contactRail.evaluate((element) => element.closest("nav"))).toBeNull();
+
+    const bannerBox = await banner.boundingBox();
+    const contactBox = await contactRail.boundingBox();
+    const mainBox = await page.getByRole("main").boundingBox();
+    expect(contactBox.y, JSON.stringify({ viewport, bannerBox, contactBox, mainBox })).toBeGreaterThanOrEqual(bannerBox.y);
+    expect(contactBox.y + contactBox.height).toBeLessThanOrEqual(bannerBox.y + bannerBox.height);
+    expect(mainBox.y).toBeGreaterThanOrEqual(bannerBox.y + bannerBox.height);
+
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(contactRail).toBeInViewport();
+    await page.goto("about:blank");
+  }
+});
+
+test("wide-screen contact controls remain at the lower-right viewport edge", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/projects/");
+
+  const contactRail = page.getByRole("complementary", { name: "Contact Albert Chang" });
+  const box = await contactRail.boundingBox();
+  expect(await contactRail.evaluate((element) => getComputedStyle(element).position)).toBe("fixed");
+  expect(box.x + box.width).toBeGreaterThan(1200);
+  expect(box.y + box.height).toBeGreaterThan(720);
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(contactRail).toBeInViewport();
 });

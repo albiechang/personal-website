@@ -33,17 +33,16 @@
         <a href="{{ '/education/' | url }}">Education</a>
         <a href="{{ '/#about' | url }}">About</a>
       </nav>
+      <aside class="contact-rail" aria-label="Contact Albert Chang">
+        <a href="mailto:{{ site.email }}" aria-label="Email Albert Chang">Email</a>
+        <a href="{{ site.linkedin }}" aria-label="Albert Chang on LinkedIn" rel="me noopener">LinkedIn</a>
+      </aside>
     </header>
 
     <main id="main-content">
       {% include "visual-motif.njk" %}
       <div class="page-content">{{ content | safe }}</div>
     </main>
-
-    <aside class="contact-rail" aria-label="Contact Albert Chang">
-      <a href="mailto:{{ site.email }}" aria-label="Email Albert Chang">Email</a>
-      <a href="{{ site.linkedin }}" aria-label="Albert Chang on LinkedIn" rel="me noopener">LinkedIn</a>
-    </aside>
 
     <footer class="site-footer">
       <div><strong>{{ site.name }}</strong><span>{{ site.brandLine }}</span></div>

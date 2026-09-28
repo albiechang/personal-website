@@ -24,7 +24,7 @@ a:hover { color: var(--color-accent); }
 a:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 4px; border-radius: 2px; }
 .skip-link { position: fixed; z-index: 20; left: 1rem; top: 1rem; padding: 0.7rem 1rem; background: var(--color-text); color: var(--color-text-inverse); transform: translateY(-180%); }
 .skip-link:focus { transform: translateY(0); }
-.site-header { position: sticky; z-index: 10; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 0.8rem max(1rem, calc((100% - var(--content-width)) / 2)); background: color-mix(in srgb, var(--color-canvas) 92%, transparent); border-bottom: 1px solid var(--color-border); backdrop-filter: blur(12px); }
+.site-header { position: sticky; z-index: 10; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 0.8rem max(1rem, calc((100% - var(--content-width)) / 2)); background: var(--color-canvas); border-bottom: 1px solid var(--color-border); }
 .wordmark { font-weight: 700; text-decoration: none; }
 .site-header nav { display: flex; flex-wrap: wrap; gap: clamp(0.8rem, 3vw, 2rem); font-size: 0.95rem; }
 .site-header nav a { text-decoration: none; }
@@ -46,7 +46,7 @@ main { position: relative; overflow: hidden; }
 .button { display: inline-block; min-height: 44px; padding: 0.65rem 1rem; color: var(--color-text-inverse); background: var(--color-text); border-radius: var(--radius-small); text-decoration: none; }
 .button:hover { color: var(--color-text-inverse); background: var(--color-accent); }
 .text-link { font-weight: 600; }
-.portrait-placeholder { aspect-ratio: 4 / 5; display: grid; place-items: end center; padding: 1rem; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 50% 50% var(--radius-small) var(--radius-small); color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.75rem; text-align: center; }
+.portrait-placeholder { aspect-ratio: 4 / 5; display: grid; place-items: end center; padding: 1rem; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 50% 50% var(--radius-small) var(--radius-small); color: var(--color-text); font-family: var(--font-mono); font-size: 0.75rem; text-align: center; }
 .portrait-placeholder::before { content: ""; width: 42%; aspect-ratio: 1; align-self: end; margin-bottom: -1.4rem; border: 1px solid var(--color-text-muted); border-radius: 50%; opacity: 0.55; }
 .section-shell { padding-block: clamp(4rem, 8vw, 7rem); border-top: 1px solid var(--color-border); }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
@@ -144,13 +144,13 @@ main { position: relative; overflow: hidden; }
   .visual-motif--sequence { height: 42rem; }
   .visual-motif--sequence .visual-motif__line, .visual-motif--sequence .visual-motif__energized { d: path("M96 0 V1000"); }
   .visual-motif--sequence .visual-motif__node:nth-of-type(n + 3) { display: none; }
-  .site-header { align-items: flex-start; padding-inline: 1rem; }
-  .site-header nav { max-width: 15rem; justify-content: flex-end; }
+  .site-header { flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0.55rem max(1rem, env(safe-area-inset-right)) 0.55rem max(1rem, env(safe-area-inset-left)); }
+  .site-header nav { order: 3; flex: 1 0 100%; max-width: none; justify-content: space-between; }
   .hero { grid-template-columns: 1fr; min-height: auto; }
   .portrait-placeholder { width: min(12rem, 52vw); grid-row: 1; }
   .hero h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
   .section-heading { align-items: flex-start; flex-direction: column; }
-  .contact-rail { right: max(0.7rem, env(safe-area-inset-right)); bottom: max(0.7rem, env(safe-area-inset-bottom)); }
+  .contact-rail { position: static; order: 2; margin-left: auto; padding: 0; border: 0; box-shadow: none; }
   .site-footer { grid-template-columns: 1fr; }
   .site-footer small { grid-column: auto; }
   .project-grid, .project-grid--featured { grid-template-columns: 1fr; }
@@ -160,6 +160,7 @@ main { position: relative; overflow: hidden; }
 }
 
 @media (min-width: 48.01rem) and (max-width: 64rem) {
+  .contact-rail { position: static; margin-left: auto; padding: 0; border: 0; box-shadow: none; }
   .project-grid, .project-grid--featured { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
