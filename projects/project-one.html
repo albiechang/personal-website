@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project One — Albert Chang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+</head>
+<body class="shell">
+
+  <nav class="navbar" aria-label="Main navigation">
+    <a href="../index.html" class="navbar__logo">Albert<span>.</span></a>
+    <ul class="navbar__links" role="list">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../education.html">Education</a></li>
+      <li><a href="../experience.html">Experience</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+    </ul>
+    <div class="navbar__contact">
+      <a href="mailto:albert.chang@vde.com" aria-label="Email">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+      <a href="https://linkedin.com/in/yourhandle" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+    </div>
+    <button class="navbar__hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="navbar__mobile-menu" role="navigation">
+    <a href="../index.html">Home</a>
+    <a href="../education.html">Education</a>
+    <a href="../experience.html">Experience</a>
+    <a href="../projects.html">Projects</a>
+  </div>
+
+  <main class="main-content">
+    <div class="project-detail fade-up">
+
+      <a href="../projects.html" class="project-detail__back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        All projects
+      </a>
+
+      <!-- TODO: Replace everything below with your real project content -->
+      <div class="project-detail__meta">
+        <span class="tag">React</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Node.js</span>
+      </div>
+
+      <h1>Project One</h1>
+
+      <!-- TODO: Replace with real hero image -->
+      <div class="project-detail__hero-img" style="background:#1e2a1e; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.9rem;">
+        Project screenshot / hero image
+      </div>
+
+      <div class="project-detail__section">
+        <h3>Overview</h3>
+        <p>
+          Describe what this project is, what problem it solves, and who it's for.
+          Give a sense of scope — is this a weekend hack, a polished product, or something in between?
+        </p>
+      </div>
+
+      <div class="project-detail__section">
+        <h3>My role &amp; contributions</h3>
+        <p>
+          What did you personally build or design? What were the interesting technical challenges
+          you had to solve? This is where you tell the story behind the code.
+        </p>
+      </div>
+
+      <div class="project-detail__section">
+        <h3>Outcomes</h3>
+        <p>
+          What happened after you shipped it? Users, performance numbers, learnings —
+          quantify where you can.
+        </p>
+      </div>
+
+      <div class="project-detail__links">
+        <!-- TODO: Replace # with real URLs, or remove links that don't apply -->
+        <a href="#" target="_blank" rel="noopener noreferrer" class="btn">View live demo</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub repo
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="../js/transitions.js"></script>
+  <script src="../js/nav.js"></script>
+</body>
+</html>
