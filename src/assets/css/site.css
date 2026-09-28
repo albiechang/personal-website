@@ -139,18 +139,22 @@ main { position: relative; overflow: hidden; }
 .site-footer div:first-child { flex-direction: column; gap: 0; }
 .site-footer small { grid-column: 1 / -1; color: var(--color-text-muted); }
 
+@media (max-width: 64rem) {
+  .contact-rail { position: static; margin-left: auto; padding: 0; border: 0; box-shadow: none; }
+}
+
 @media (max-width: 48rem) {
   .visual-motif { opacity: 0.42; }
   .visual-motif--sequence { height: 42rem; }
   .visual-motif--sequence .visual-motif__line, .visual-motif--sequence .visual-motif__energized { d: path("M96 0 V1000"); }
   .visual-motif--sequence .visual-motif__node:nth-of-type(n + 3) { display: none; }
   .site-header { flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0.55rem max(1rem, env(safe-area-inset-right)) 0.55rem max(1rem, env(safe-area-inset-left)); }
-  .site-header nav { order: 3; flex: 1 0 100%; max-width: none; justify-content: space-between; }
+  .site-header nav { order: 2; flex: 1 0 100%; max-width: none; justify-content: space-between; }
   .hero { grid-template-columns: 1fr; min-height: auto; }
   .portrait-placeholder { width: min(12rem, 52vw); grid-row: 1; }
   .hero h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
   .section-heading { align-items: flex-start; flex-direction: column; }
-  .contact-rail { position: static; order: 2; margin-left: auto; padding: 0; border: 0; box-shadow: none; }
+  .contact-rail { order: 3; }
   .site-footer { grid-template-columns: 1fr; }
   .site-footer small { grid-column: auto; }
   .project-grid, .project-grid--featured { grid-template-columns: 1fr; }
@@ -160,7 +164,6 @@ main { position: relative; overflow: hidden; }
 }
 
 @media (min-width: 48.01rem) and (max-width: 64rem) {
-  .contact-rail { position: static; margin-left: auto; padding: 0; border: 0; box-shadow: none; }
   .project-grid, .project-grid--featured { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -185,4 +188,6 @@ main { position: relative; overflow: hidden; }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
   .experience-timeline::after { display: none; }
   .visual-motif__energized { animation: none !important; transition: none !important; }
+  .project-card:hover img, .project-card:focus-visible img,
+  .project-card:hover .project-card__summary, .project-card:focus-visible .project-card__summary { transform: none; }
 }

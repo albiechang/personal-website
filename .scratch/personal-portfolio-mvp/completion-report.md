@@ -9,10 +9,10 @@ The MVP is verified through the generated production site and is ready for Alber
 - Automated Axe checks on the homepage, Project Collection, Education Journey, a Project Visualization page, and a rich-media Project Page
 - Manual keyboard review of skip navigation, focus order, visible focus, Project Card disclosure, Project navigation, and persistent contact controls
 - Screen-reader-oriented review of landmarks, heading hierarchy, link and control names, live regions, fallback content, and the visualization control group
-- Desktop, tablet, mobile, and reduced-motion screenshot review in `test-results/visual-review/`
+- Desktop, tablet, mobile, and reduced-motion screenshot review in `test-results/visual-review/`, including tablet Project Visualization and mobile rich-media reflow
 - Source audit for prohibited tracking, advertising, authentication, contact forms, university marks, employer logos, fabricated accomplishments, stale prototype files, and unapproved global dependencies
 
-The verification pass corrected portrait-placeholder contrast, gave the Project Visualization controls a valid accessible group role, and moved compact contact controls into the sticky header so they remain available without covering tablet or mobile content. Wide-screen controls remain at the lower-right viewport edge.
+The verification pass corrected portrait-placeholder contrast, gave the Project Visualization controls a valid accessible group role, disabled Project Card transforms for reduced-motion visitors, and moved compact contact controls into the sticky header so their visual and keyboard order agree without covering tablet or mobile content. Wide-screen controls remain at the lower-right viewport edge.
 
 ## Remaining replaceable inputs
 

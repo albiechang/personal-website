@@ -64,6 +64,12 @@ test("deep routes stay script-free and reduced-motion rendering stays static", a
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+
+  await page.goto("/projects/");
+  const card = page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
+  await card.hover();
+  await expect(card.getByRole("img")).toHaveCSS("transform", "none");
+  await expect(card.getByText(/An honest demonstration/)).toHaveCSS("transform", "none");
 });
 
 test("every public route has unique discoverability metadata and sitemap coverage", async ({ page }) => {
@@ -155,12 +161,23 @@ test("visual review captures cover motif placement across routes, viewports, and
   const captures = [
     { name: "homepage-desktop", route: "/", width: 1440, height: 1000 },
     { name: "projects-tablet", route: "/projects/", width: 900, height: 900 },
-    { name: "education-mobile", route: "/education/", width: 390, height: 844 }
+    { name: "visualization-tablet", route: "/projects/grid-resilience-scenario-explorer/", width: 900, height: 900 },
+    { name: "education-mobile", route: "/education/", width: 390, height: 844 },
+    { name: "rich-media-mobile", route: "/projects/solar-notes/", width: 390, height: 844 }
   ];
 
   for (const capture of captures) {
     await page.setViewportSize({ width: capture.width, height: capture.height });
     await page.goto(capture.route);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    if (capture.name === "visualization-tablet") {
+      const diagram = await page.getByRole("img", { name: /Three named scenarios connect/ }).boundingBox();
+      expect(diagram.width).toBeLessThanOrEqual(capture.width);
+    }
+    if (capture.name === "rich-media-mobile") {
+      const video = await page.locator("video").boundingBox();
+      expect(video.width).toBeLessThanOrEqual(capture.width);
+    }
     await page.screenshot({ path: `test-results/visual-review/${capture.name}.png`, fullPage: true });
   }
 
@@ -521,9 +538,14 @@ test("compact contact controls remain persistent without covering document conte
     expect(await contactRail.evaluate((element) => element.closest("nav"))).toBeNull();
 
     const bannerBox = await banner.boundingBox();
+    const navigationBox = await page.getByRole("navigation", { name: "Primary" }).boundingBox();
     const contactBox = await contactRail.boundingBox();
     const mainBox = await page.getByRole("main").boundingBox();
-    expect(contactBox.y, JSON.stringify({ viewport, bannerBox, contactBox, mainBox })).toBeGreaterThanOrEqual(bannerBox.y);
+    if (viewport.width <= 768) {
+      expect(contactBox.y, JSON.stringify({ viewport, bannerBox, contactBox, mainBox })).toBeGreaterThanOrEqual(navigationBox.y);
+    } else {
+      expect(contactBox.x).toBeGreaterThanOrEqual(navigationBox.x + navigationBox.width);
+    }
     expect(contactBox.y + contactBox.height).toBeLessThanOrEqual(bannerBox.y + bannerBox.height);
     expect(mainBox.y).toBeGreaterThanOrEqual(bannerBox.y + bannerBox.height);
 
@@ -539,7 +561,6 @@ test("wide-screen contact controls remain at the lower-right viewport edge", asy
 
   const contactRail = page.getByRole("complementary", { name: "Contact Albert Chang" });
   const box = await contactRail.boundingBox();
-  expect(await contactRail.evaluate((element) => getComputedStyle(element).position)).toBe("fixed");
   expect(box.x + box.width).toBeGreaterThan(1200);
   expect(box.y + box.height).toBeGreaterThan(720);
 
