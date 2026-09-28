@@ -5,7 +5,6 @@ date: 2026-09-01
 displayDate: September 2026
 role: Demonstration role
 tags:
-  - project
   - Renewable energy
   - Community engagement
   - Infrastructure planning

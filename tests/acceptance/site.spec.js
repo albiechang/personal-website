@@ -111,6 +111,11 @@ test("keyboard and responsive visitors retain clear navigation and Project acces
   const touchContext = await browser.newContext({ hasTouch: true, viewport: { width: 1024, height: 800 } });
   const touchPage = await touchContext.newPage();
   await touchPage.goto("http://127.0.0.1:4173/projects/");
-  await expect(touchPage.getByText(/An honest demonstration/).first()).toBeHidden();
+  const touchSummary = touchPage.getByText(/An honest demonstration/).first();
+  await expect(touchSummary).toBeHidden();
+  const touchKeyboardCard = touchPage.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
+  await tabUntilFocused(touchPage, touchKeyboardCard);
+  await expect(touchKeyboardCard).toBeFocused();
+  await expect(touchSummary).toHaveCSS("opacity", "1");
   await touchContext.close();
 });

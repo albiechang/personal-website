@@ -95,14 +95,18 @@ main { overflow: hidden; }
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 48.01rem) {
-  .project-card:hover img, .project-card:focus-visible img { transform: scale(1.025); }
-  .project-card:hover .project-card__title, .project-card:focus-visible .project-card__title { bottom: auto; top: 1rem; }
-  .project-card:hover .project-card__summary, .project-card:focus-visible .project-card__summary { opacity: 1; transform: translateY(0); }
+  .project-card:hover img { transform: scale(1.025); }
+  .project-card:hover .project-card__title { bottom: auto; top: 1rem; }
+  .project-card:hover .project-card__summary { opacity: 1; transform: translateY(0); }
 }
 
 @media (hover: none), (pointer: coarse), (max-width: 48rem) {
   .project-card__summary { display: none; }
 }
+
+.project-card:focus-visible img { transform: scale(1.025); }
+.project-card:focus-visible .project-card__title { bottom: auto; top: 1rem; }
+.project-card:focus-visible .project-card__summary { display: block; opacity: 1; transform: translateY(0); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

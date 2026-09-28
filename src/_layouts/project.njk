@@ -9,7 +9,7 @@ layout: base.njk
     <p class="project-summary">{{ summary }}</p>
     <dl class="project-meta">
       <div><dt>Role</dt><dd>{{ role }}</dd></div>
-      <div><dt>Tags</dt><dd>{% for tag in tags %}{% if tag != 'project' %}<span>{{ tag }}</span>{% endif %}{% endfor %}</dd></div>
+      <div><dt>Tags</dt><dd>{% for tag in tags %}<span>{{ tag }}</span>{% endfor %}</dd></div>
     </dl>
   </header>
   <div class="project-body">{{ content | safe }}</div>

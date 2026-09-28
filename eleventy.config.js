@@ -3,7 +3,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addCollection("projects", (collectionApi) =>
     collectionApi
-      .getFilteredByTag("project")
+      .getFilteredByGlob("./src/projects/*.md")
       .sort((left, right) => right.date - left.date)
   );
 
