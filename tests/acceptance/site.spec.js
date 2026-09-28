@@ -3,6 +3,14 @@ const httpServer = require("http-server");
 
 let server;
 
+async function tabUntilFocused(page, target, maximumTabs = 20) {
+  for (let index = 0; index < maximumTabs; index += 1) {
+    await page.keyboard.press("Tab");
+    if (await target.evaluate((element) => element === document.activeElement)) return;
+  }
+  throw new Error("Keyboard focus did not reach the expected control");
+}
+
 test.beforeAll(async () => {
   server = httpServer.createServer({ root: "_site", cache: -1 });
   await new Promise((resolve) => server.listen(4173, "127.0.0.1", resolve));
@@ -45,33 +53,64 @@ test("one Markdown Project is featured, collected, and available on its own page
   await expect(page.getByRole("link", { name: "Back to all projects" })).toHaveAttribute("href", "/projects/");
 });
 
-test("keyboard and responsive visitors retain clear navigation and Project access", async ({ page }) => {
+test("keyboard and responsive visitors retain clear navigation and Project access", async ({ page, browser }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/projects/");
 
-  await expect(page.locator(".project-grid")).toHaveCSS("grid-template-columns", /.+px .+px .+px/);
   const card = page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
   await card.hover();
-  await expect(card.locator(".project-card__summary")).toBeVisible();
-  await card.focus();
-  await expect(card).toBeFocused();
-  await expect(card.locator(".project-card__summary")).toBeVisible();
+  const projectSummary = card.getByText(/An honest demonstration/);
+  await expect(projectSummary).toHaveCSS("opacity", "1");
+  expect((await card.boundingBox()).width).toBeLessThan(400);
   await expect(page.getByText("View project", { exact: true })).toHaveCount(0);
 
   await page.goto("/");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
   await expect(page.getByRole("link", { name: "Skip to main content" })).toHaveCSS("outline-style", "solid");
-  await expect(page.locator(".site-header")).toHaveCSS("position", "sticky");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Albert Chang", exact: true }).first()).toBeFocused();
+  await page.keyboard.press("Tab");
+  const projectsNavigation = page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Projects" });
+  await expect(projectsNavigation).toBeFocused();
+  await expect(projectsNavigation).toHaveCSS("outline-style", "solid");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/projects\/$/);
+
+  const keyboardCard = page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
+  await tabUntilFocused(page, keyboardCard);
+  await expect(keyboardCard).toBeFocused();
+  await expect(keyboardCard).toHaveCSS("outline-style", "solid");
+  await expect(keyboardCard.getByText(/An honest demonstration/)).toHaveCSS("opacity", "1");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/projects\/renewable-infrastructure-field-notes\/$/);
+
+  const emailControl = page.getByRole("link", { name: "Email Albert Chang" });
+  await tabUntilFocused(page, emailControl);
+  await expect(emailControl).toBeFocused();
+  await expect(emailControl).toHaveCSS("outline-style", "solid");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toBeFocused();
+
+  const banner = page.getByRole("banner");
+  const initialBannerTop = (await banner.boundingBox()).y;
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  expect((await banner.boundingBox()).y).toBe(initialBannerTop);
 
   await page.setViewportSize({ width: 820, height: 900 });
   await page.goto("/projects/");
-  await expect(page.locator(".project-grid")).toHaveCSS("grid-template-columns", /.+px .+px/);
+  expect((await page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ }).boundingBox()).width).toBeLessThan(400);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/projects/");
-  await expect(page.locator(".project-grid")).toHaveCSS("grid-template-columns", /.+px/);
-  await expect(page.locator(".project-card__summary")).toBeHidden();
+  expect((await page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ }).boundingBox()).width).toBeGreaterThan(340);
+  await expect(page.getByText(/An honest demonstration/).first()).toBeHidden();
   await expect(page.getByRole("link", { name: "Email Albert Chang" })).toBeInViewport();
   await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toBeInViewport();
+
+  const touchContext = await browser.newContext({ hasTouch: true, viewport: { width: 1024, height: 800 } });
+  const touchPage = await touchContext.newPage();
+  await touchPage.goto("http://127.0.0.1:4173/projects/");
+  await expect(touchPage.getByText(/An honest demonstration/).first()).toBeHidden();
+  await touchContext.close();
 });

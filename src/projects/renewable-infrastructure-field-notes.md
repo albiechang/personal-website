@@ -4,7 +4,8 @@ summary: An honest demonstration of how a future renewable-energy Project can co
 date: 2026-09-01
 displayDate: September 2026
 role: Demonstration role
-topics:
+tags:
+  - project
   - Renewable energy
   - Community engagement
   - Infrastructure planning
