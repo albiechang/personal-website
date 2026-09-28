@@ -4,7 +4,7 @@
 
 **Blocked by:** 01: Build the Eleventy foundation and first complete Project path.
 
-**Status:** ready-for-agent
+**Status:** in-progress
 
 - [ ] Store Experience entries as structured data supporting a marker reference, company, role, location, start date, and end date or current-state label.
 - [ ] Render Experience most-recent-first and keep every entry present and readable before any JavaScript enhancement runs.
@@ -19,4 +19,3 @@
 - [ ] Use plain-text institution names without logos, seals, mascots, tartan, or recreated official graphics.
 - [ ] Ensure the Education Journey remains coherent when optional honors, coursework, leadership, or Project sections are absent.
 - [ ] Extend the public-site tests to cover timeline ordering and visibility, reduced-motion behavior, Education navigation, optional Education sections, and canonical academic Project links.
-

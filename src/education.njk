@@ -1,0 +1,62 @@
+---
+layout: base.njk
+title: Education Journey
+description: Albert Chang’s Education Journey, with provisional institution facts and space for verified formative decisions, leadership, service, and academic Projects.
+---
+<header class="page-intro education-intro">
+  <p class="eyebrow">Professional Record</p>
+  <h1>Education Journey</h1>
+  <p>{{ education.introduction }}</p>
+</header>
+
+<section class="section-shell education-facts" aria-label="Education facts">
+  <p class="eyebrow">At a glance</p>
+  <h2 id="education-facts-title">Institution and degree facts</h2>
+  <div class="education-fact-grid">
+    {% for institution in education.institutions %}
+      <article class="education-fact education-fact--{{ institution.context }}">
+        <h3>{{ institution.name }}</h3>
+        <dl>
+          <div><dt>Degree</dt><dd>{{ institution.degree }}</dd></div>
+          <div><dt>Dates</dt><dd>{{ institution.dates }}</dd></div>
+        </dl>
+        {% if institution.honors %}<h4>Honors</h4><p>{{ institution.honors }}</p>{% endif %}
+        {% if institution.coursework %}<h4>Coursework</h4><p>{{ institution.coursework }}</p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section-shell education-stages" aria-labelledby="education-stages-title">
+  <p class="eyebrow">In context</p>
+  <h2 id="education-stages-title">Formative stages and decisions</h2>
+  <div class="education-stage-grid">
+    {% for institution in education.institutions %}
+      <article class="education-stage education-stage--{{ institution.context }}">
+        <h3>{{ institution.stageTitle }}</h3>
+        <p>{{ institution.stageSummary }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+{% if education.leadership %}
+  <section class="section-shell narrative-section" aria-labelledby="leadership-title">
+    <p class="eyebrow">Beyond the classroom</p>
+    <h2 id="leadership-title">Leadership and service</h2>
+    <p>{{ education.leadership }}</p>
+  </section>
+{% endif %}
+
+{% if education.selectedProjects.length %}
+  <section class="section-shell education-projects" aria-labelledby="education-projects-title">
+    <p class="eyebrow">Canonical records</p>
+    <h2 id="education-projects-title">Selected academic Projects</h2>
+    <p class="placeholder-note">Academic work will stay authoritative on its Project Page rather than being duplicated here.</p>
+    <ul>
+      {% for project in education.selectedProjects %}
+        <li><a href="{{ project.url | url }}">{{ project.title }}</a><span>{{ project.note }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}

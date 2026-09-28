@@ -34,6 +34,60 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page.getByRole("contentinfo")).toContainText("Albert Chang");
 });
 
+test("Experience Timeline is newest-first, complete without scripts, and respects reduced motion", async ({ page, browser }) => {
+  await page.goto("/");
+
+  const timeline = page.getByRole("list", { name: "Experience Timeline" });
+  const entries = timeline.getByRole("listitem");
+  await expect(entries).toHaveCount(2);
+  await expect(entries.nth(0)).toContainText("Current entry placeholder");
+  await expect(entries.nth(1)).toContainText("Earlier entry placeholder");
+  for (const entry of [entries.nth(0), entries.nth(1)]) {
+    await expect(entry.getByText(/Organization name pending confirmation/)).toBeVisible();
+    await expect(entry.getByText(/Role pending confirmation/)).toBeVisible();
+    await expect(entry.getByText(/Location pending confirmation/)).toBeVisible();
+  }
+
+  const noScriptContext = await browser.newContext({ javaScriptEnabled: false });
+  const noScriptPage = await noScriptContext.newPage();
+  await noScriptPage.goto("http://127.0.0.1:4173/");
+  await expect(noScriptPage.getByRole("list", { name: "Experience Timeline" }).getByRole("listitem")).toHaveCount(2);
+  await expect(noScriptPage.getByText("Earlier entry placeholder")).toBeVisible();
+  await noScriptContext.close();
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Experience" })).toHaveAttribute("data-timeline-motion", "disabled");
+});
+
+test("Education preview leads to a coherent Education Journey with canonical Project links", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByRole("region", { name: "Education Journey preview" })).toContainText("Carnegie Mellon University");
+  await page.getByRole("link", { name: "Explore the Education Journey" }).click();
+  await expect(page).toHaveURL(/\/education\/$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Education Journey" })).toBeVisible();
+
+  const facts = page.getByRole("region", { name: "Education facts" });
+  await expect(facts).toContainText("Carnegie Mellon University");
+  await expect(facts).toContainText("University of California San Diego");
+  await expect(facts.getByText("Degree details pending confirmation")).toHaveCount(2);
+  await expect(page.getByRole("heading", { level: 2, name: "Formative stages and decisions" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Leadership and service" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Selected academic Projects" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Honors" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Coursework" })).toHaveCount(0);
+
+  const projectLink = page.getByRole("link", { name: "Water Systems Design Notebook for Early-Stage Alternatives" });
+  await expect(projectLink).toHaveAttribute("href", "/projects/water-systems-design-notebook/");
+  await projectLink.click();
+  await expect(page).toHaveURL(/\/projects\/water-systems-design-notebook\/$/);
+
+  await page.goto("/");
+  await page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Education" }).click();
+  await expect(page).toHaveURL(/\/education\/$/);
+});
+
 test("one Markdown Project is featured, collected, and available on its own page", async ({ page }) => {
   const projectTitle = "Renewable Infrastructure Field Notes";
   const projectSummary = "An honest demonstration of how a future renewable-energy Project can combine field context, engineering decisions, and community priorities.";

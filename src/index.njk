@@ -2,6 +2,7 @@
 layout: base.njk
 title: Professional Record
 description: Albert Chang is a community-centered engineer developing renewable-energy projects that turn climate goals into practical infrastructure.
+pageModule: /assets/js/experience-timeline.js
 ---
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero-copy">
@@ -31,10 +32,28 @@ description: Albert Chang is a community-centered engineer developing renewable-
   </div>
 </section>
 
-<section id="experience" class="section-shell narrative-section" aria-labelledby="experience-title">
+<section id="experience" class="section-shell experience-section" aria-label="Experience" data-experience-timeline data-timeline-motion="pending">
   <p class="eyebrow">Experience</p>
-  <h2 id="experience-title">A factual timeline is being prepared.</h2>
-  <p>This reserved space will present organizations, roles, locations, and dates without inventing details before Albert supplies them.</p>
+  <h2 id="experience-title">Experience Timeline</h2>
+  <p class="placeholder-note">The structure is ready; every entry remains explicitly provisional until Albert supplies verified organizations, roles, locations, and dates.</p>
+  <ol class="experience-timeline" aria-label="Experience Timeline">
+    {% for entry in experience %}
+      <li class="experience-entry" data-timeline-entry>
+        <div class="experience-marker-slot" aria-hidden="true">
+          {% if entry.marker %}<img src="{{ entry.marker.src | url }}" alt="">{% else %}<span class="experience-marker"></span>{% endif %}
+        </div>
+        <article>
+          <p class="experience-entry__label">{{ entry.label }}</p>
+          <h3>{{ entry.company }}</h3>
+          <p class="experience-entry__role">{{ entry.role }}</p>
+          <dl class="experience-entry__facts">
+            <div><dt>Location</dt><dd>{{ entry.location }}</dd></div>
+            <div><dt>Dates</dt><dd>{{ entry.startDate }} – {{ entry.currentLabel or entry.endDate }}</dd></div>
+          </dl>
+        </article>
+      </li>
+    {% endfor %}
+  </ol>
 </section>
 
 <section id="about" class="section-shell narrative-section" aria-labelledby="about-title">
@@ -43,8 +62,9 @@ description: Albert Chang is a community-centered engineer developing renewable-
   <p>I’ll use this space to reflect on the values, objectives, and interests behind my work. For now, this honest placeholder marks the shape of that story without turning unfinished ideas into claims.</p>
 </section>
 
-<section id="education" class="section-shell education-preview" aria-labelledby="education-title">
+<section id="education" class="section-shell education-preview" aria-label="Education Journey preview">
   <p class="eyebrow">Education Journey</p>
-  <h2 id="education-title">Formative decisions and learning will live here.</h2>
-  <p>This preview reserves space for concise institution and degree facts alongside the experiences that made them meaningful.</p>
+  <h2 id="education-title">Learning in context, not just credentials.</h2>
+  <p>Degree details for Carnegie Mellon University and the University of California San Diego are pending confirmation. The full Education Journey reserves room for verified formative decisions, leadership, service, and academic Projects.</p>
+  <a class="text-link" href="{{ '/education/' | url }}">Explore the Education Journey</a>
 </section>

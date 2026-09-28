@@ -18,7 +18,7 @@
       <nav aria-label="Primary">
         <a href="{{ '/projects/' | url }}">Projects</a>
         <a href="{{ '/#experience' | url }}">Experience</a>
-        <a href="{{ '/#education' | url }}">Education</a>
+        <a href="{{ '/education/' | url }}">Education</a>
         <a href="{{ '/#about' | url }}">About</a>
       </nav>
     </header>
@@ -36,5 +36,6 @@
       <small>© 2026 Albert Chang. A Professional Record in progress.</small>
     </footer>
     {% if visualization %}<script type="module" src="{{ visualization.module | url }}"></script>{% endif %}
+    {% if pageModule %}<script type="module" src="{{ pageModule | url }}"></script>{% endif %}
   </body>
 </html>
