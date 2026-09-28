@@ -103,8 +103,13 @@ test("keyboard and responsive visitors retain clear navigation and Project acces
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/projects/");
-  expect((await page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ }).boundingBox()).width).toBeGreaterThan(340);
-  await expect(page.getByText(/An honest demonstration/).first()).toBeHidden();
+  const mobileCard = page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
+  const mobileSummary = page.getByText(/An honest demonstration/).first();
+  expect((await mobileCard.boundingBox()).width).toBeGreaterThan(340);
+  await expect(mobileSummary).toBeHidden();
+  await tabUntilFocused(page, mobileCard);
+  await expect(mobileCard).toBeFocused();
+  await expect(mobileSummary).toBeHidden();
   await expect(page.getByRole("link", { name: "Email Albert Chang" })).toBeInViewport();
   await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toBeInViewport();
 

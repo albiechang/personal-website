@@ -104,9 +104,11 @@ main { overflow: hidden; }
   .project-card__summary { display: none; }
 }
 
-.project-card:focus-visible img { transform: scale(1.025); }
-.project-card:focus-visible .project-card__title { bottom: auto; top: 1rem; }
-.project-card:focus-visible .project-card__summary { display: block; opacity: 1; transform: translateY(0); }
+@media (min-width: 48.01rem) {
+  .project-card:focus-visible img { transform: scale(1.025); }
+  .project-card:focus-visible .project-card__title { bottom: auto; top: 1rem; }
+  .project-card:focus-visible .project-card__summary { display: block; opacity: 1; transform: translateY(0); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
