@@ -83,7 +83,17 @@ test("Project Pages support varied compositions and safe rich media", async ({ p
   await expect(video).not.toHaveAttribute("autoplay", "");
   await expect(video).toHaveAttribute("poster", /project-solar-notes\.svg$/);
   await expect(video.locator('track[kind="captions"]')).toHaveAttribute("src", /demo-captions\.vtt$/);
-  await expect(page.getByText("Video transcript", { exact: true })).toBeVisible();
+  const videoHeading = page.getByRole("heading", { level: 2, name: "Video evidence placeholder" });
+  const videoTranscript = page.getByText("Video transcript", { exact: true });
+  const videoHeadingId = await videoHeading.getAttribute("id");
+  const videoTranscriptId = await video.getAttribute("aria-describedby");
+  expect(videoHeadingId).toBeTruthy();
+  expect(videoTranscriptId).toBeTruthy();
+  await expect(page.locator(`[aria-labelledby="${videoHeadingId}"]`)).toHaveCount(1);
+  await expect(page.locator(`#${videoTranscriptId}`)).toHaveCount(1);
+  await expect(videoTranscript).toBeVisible();
+  const ids = await page.locator("[id]").evaluateAll((elements) => elements.map((element) => element.id));
+  expect(new Set(ids).size).toBe(ids.length);
   await expect(page.getByRole("link", { name: "Back to all projects" })).toBeVisible();
 
   await page.goto("/projects/grid-resilience-scenario-explorer/");
