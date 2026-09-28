@@ -1,0 +1,16 @@
+---
+layout: base.njk
+---
+<article class="project-page">
+  <a class="back-link" href="{{ '/projects/' | url }}">← Back to all projects</a>
+  <header class="project-header">
+    <p class="eyebrow">Project · {{ displayDate }}</p>
+    <h1>{{ title }}</h1>
+    <p class="project-summary">{{ summary }}</p>
+    <dl class="project-meta">
+      <div><dt>Role</dt><dd>{{ role }}</dd></div>
+      <div><dt>Tags</dt><dd>{% for tag in topics %}<span>{{ tag }}</span>{% endfor %}</dd></div>
+    </dl>
+  </header>
+  <div class="project-body">{{ content | safe }}</div>
+</article>

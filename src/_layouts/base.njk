@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ description or 'Albert Chang’s Professional Record in community-centered engineering and renewable-energy development.' }}">
+    <title>{{ title }} · {{ site.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ '/assets/css/site.css' | url }}">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+      <a class="wordmark" href="{{ '/' | url }}">Albert Chang</a>
+      <nav aria-label="Primary">
+        <a href="{{ '/projects/' | url }}">Projects</a>
+        <a href="{{ '/#experience' | url }}">Experience</a>
+        <a href="{{ '/#education' | url }}">Education</a>
+        <a href="{{ '/#about' | url }}">About</a>
+      </nav>
+    </header>
+
+    <main id="main-content">{{ content | safe }}</main>
+
+    <aside class="contact-rail" aria-label="Contact Albert Chang">
+      <a href="mailto:{{ site.email }}" aria-label="Email Albert Chang">Email</a>
+      <a href="{{ site.linkedin }}" aria-label="Albert Chang on LinkedIn" rel="me noopener">LinkedIn</a>
+    </aside>
+
+    <footer class="site-footer">
+      <div><strong>{{ site.name }}</strong><span>{{ site.brandLine }}</span></div>
+      <div><a href="mailto:{{ site.email }}">Email</a><a href="{{ site.linkedin }}">LinkedIn</a></div>
+      <small>© 2026 Albert Chang. A Professional Record in progress.</small>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Abstract renewable infrastructure placeholder</title>
+  <desc id="desc">A warm neutral landscape with a sun, horizon, and connected energy nodes.</desc>
+  <rect width="800" height="600" fill="#f5f0e6"/>
+  <circle cx="628" cy="142" r="55" fill="none" stroke="#c41230" stroke-width="8"/>
+  <path d="M74 390C210 330 328 466 470 390S682 330 756 368" fill="none" stroke="#182b49" stroke-width="7" stroke-linecap="round"/>
+  <path d="M102 463H701" fill="none" stroke="#6d6e71" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#fbfaf7" stroke="#c41230" stroke-width="6">
+    <circle cx="190" cy="430" r="17"/><circle cx="402" cy="430" r="17"/><circle cx="614" cy="430" r="17"/>
+  </g>
+  <path d="M207 430H385M419 430H597" fill="none" stroke="#c41230" stroke-width="5"/>
+</svg>

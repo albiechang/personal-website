@@ -1,0 +1,17 @@
+---
+layout: base.njk
+title: Project Collection
+description: Explore the complete collection of Albert Chang’s public engineering Projects.
+permalink: /projects/index.html
+---
+<header class="page-intro">
+  <p class="eyebrow">Work as evidence</p>
+  <h1>Project Collection</h1>
+  <p>Explore the public Projects that document Albert’s interests and practice. This collection currently contains one honest demonstration entry while real material is prepared.</p>
+</header>
+
+<section class="project-grid" aria-label="All projects">
+  {% for project in collections.projects %}
+    {% include "project-card.njk" %}
+  {% endfor %}
+</section>

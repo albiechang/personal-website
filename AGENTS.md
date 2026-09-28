@@ -1,101 +1,56 @@
-# Personal Portfolio Website
+# Albert Chang Professional Record
 
 ## Project overview
 
-Vanilla HTML/CSS/JS personal portfolio site for Albert Chang. Hosted on GitHub Pages. Target audience: recruiters and general visitors.
+Eleventy-generated static portfolio for Albert Chang. The site is a durable Professional Record for Albert's future self first, recruiters second, and collaborators third. Projects are the primary evidence of his engineering practice and professional interests.
 
-## File structure
+Read `CONTEXT.md` and relevant files in `docs/adr/` before changing domain language or architecture. Product work is specified and tracked under `.scratch/`; follow `docs/agents/issue-tracker.md`.
 
+## Architecture
+
+- Eleventy generates deployable HTML in `_site/`; never commit generated output.
+- Project authoring lives in `src/projects/*.md`. Shared Project metadata drives Featured Projects, the Project Collection, and each Project Page.
+- Nunjucks layouts live in `src/_layouts/`; reusable fragments live in `src/_includes/`.
+- Site-wide structured data lives in `src/_data/`.
+- Static CSS and images live in `src/assets/` and are copied through unchanged.
+- `eleventy.config.js` owns collections, passthrough copies, and deploy-path configuration.
+- `tests/acceptance/` exercises the generated production site through a real browser. Test public behavior, not template structure.
+
+## Commands
+
+```sh
+npm install
+npm run dev
+npm run build
+npm run test:acceptance
 ```
-/
-├── index.html              ← Home + About (merged into one scrollable page)
-├── education.html
-├── experience.html
-├── projects.html
-├── projects/
-│   └── project-one.html   ← Template; duplicate for each project
-├── css/
-│   ├── style.css           ← CSS variables, typography, reset, utilities, buttons
-│   ├── layout.css          ← Navbar, responsive shell
-│   └── components.css      ← Hero, about, timeline, project cards, contact icons
-├── js/
-│   ├── nav.js              ← Hamburger toggle, active link detection
-│   └── transitions.js      ← Fade-in on load, fade-out on navigate
-├── assets/
-│   ├── images/             ← Photo, project screenshots
-│   └── icons/
-└── .Codex/
-    └── launch.json         ← Dev server: python -m http.server 3000
-```
+
+`npm run dev` starts Eleventy's development server. `npm run build` creates a clean production site in `_site/`. The acceptance command builds that production output, serves it locally, and runs Playwright against public routes.
+
+To exercise a future GitHub Pages project-site prefix locally, set `SITE_PATH_PREFIX` before building. Do not invent a production URL or Git remote.
 
 ## Design system
 
-**Theme:** Light  
-**Accent color:** `#182B49` (navy blue) — used for headings, buttons, tags, active nav underlines  
-**Background:** `#f7f7f5`  
-**Surface / cards:** `#ffffff`  
-**Surface 2:** `#eeede9`  
-**Text:** `#111111`  
-**Text muted:** `#5a5a5a`  
-**Font:** Inter (Google Fonts), fallback to system sans-serif  
-**Border radius:** 10px on cards  
-**All CSS values live in `:root` variables in `css/style.css`** — change the palette there, not inline.
+- Light Color Mode only.
+- Interaction accent: Carnegie Red `#C41230`, used sparingly.
+- Canvas: warm near-white; primary surface: white; soft surface: UC San Diego Sand `#F5F0E6`.
+- Main text: soft charcoal; muted text: CMU Iron Gray `#6D6E71`; borders: CMU Steel Gray `#E0E0E0`.
+- UC San Diego Navy `#182B49` is a rare contextual accent.
+- Main type: Source Sans 3. Technical labels, dates, and tags use restrained system monospace.
+- Tokens are semantic custom properties in `src/assets/css/site.css`; do not hard-code palette values inside components.
 
-## Navigation
+## Content and interaction rules
 
-- **Top navbar** (fixed): logo left, page links center, email + LinkedIn icons right
-- No sidebar (removed by user preference)
-- No Contact page (removed by user preference) — email and LinkedIn icons are persistent in the navbar on every page
-- **Mobile** (<768px): hamburger menu, links hidden
-- Active page detection is automatic via `js/nav.js` (matches `location.pathname` to link `href`)
+- Use the glossary terms from `CONTEXT.md`, including Project, Featured Project, Project Collection, Project Page, and Professional Record.
+- Keep placeholder content explicit and honest. Do not invent achievements, employers, collaborators, outcomes, or credentials.
+- Keep Project Pages compositionally flexible. Shared layouts provide the global shell and essential metadata, not a required case-study outline.
+- Project Cards are full semantic links with an always-visible title. Summaries appear on pointer hover and keyboard focus, and remain hidden on compact touch/mobile layouts.
+- Keep email and LinkedIn controls accessible and outside primary navigation.
+- Preserve semantic HTML, skip navigation, visible focus, touch-friendly targets, reflow, and reduced-motion support.
+- Do not add analytics, a contact form, authentication, a CMS, university marks, or employer logos.
 
-## Pages
+## Current placeholders
 
-| Page | File | Notes |
-|---|---|---|
-| Home + About | `index.html` | Single scrollable page; hero → about section with `#about` anchor |
-| Education | `education.html` | Timeline + supplementary cards for extracurriculars/honors |
-| Experience | `experience.html` | Chronological timeline, most recent first |
-| Projects | `projects.html` | Responsive card grid (3→2→1 col) |
-| Project detail | `projects/project-one.html` | Template — duplicate and rename for each project |
-
-`about.html` has been removed and consolidated into `index.html`.  
-`contact.html` has been removed.
-
-## Content placeholders (still need real data)
-
-- `index.html`: tagline, bio paragraphs, interests list, photo (`assets/images/photo.jpg`)
-- `education.html`: institution names, degrees, dates, descriptions, extracurricular/honor cards
-- `experience.html`: company names, roles, dates, descriptions
-- `projects.html` + `projects/*.html`: project names, images, descriptions, tags, GitHub/demo links
-- All pages: LinkedIn URL (`yourhandle` → real handle), email already set to `albert.chang@vde.com`
-
-## Dev server
-
-```
-python -m http.server 3000
-```
-
-Configured in `.Codex/launch.json` for the preview panel. Open `http://localhost:3000`.
-
-## Key decisions
-
-- No JS framework — plain HTML/CSS/JS only
-- No contact form — icon links only (email + LinkedIn in navbar)
-- Page transitions: fade out (180ms) on navigate, fade in on load via `js/transitions.js`
-- Timeline component shared between Education and Experience pages for visual consistency
-- Project cards link to individual detail pages under `projects/`
-
-## Agent skills
-
-### Issue tracker
-
-Issues and specs are tracked as local Markdown under `.scratch/`. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-The repo uses the five default canonical triage labels. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-This is a single-context repository. See `docs/agents/domain.md`.
+- The Brand Line, portrait, About narrative, Experience Timeline data, Education Journey details, and real Project content still need Albert's verified input.
+- `src/_data/site.js` currently links the LinkedIn control to LinkedIn's home page until the final public profile URL is supplied.
+- `src/projects/renewable-infrastructure-field-notes.md` is explicitly a demonstration Project and must not be presented as completed real work.

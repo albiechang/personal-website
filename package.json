@@ -1,0 +1,18 @@
+{
+  "name": "albert-chang-professional-record",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Albert Chang's Eleventy-powered professional portfolio.",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy",
+    "serve:test": "http-server _site -p 4173 -c-1",
+    "test:acceptance": "npm run build && playwright test",
+    "test": "npm run test:acceptance"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.6",
+    "@playwright/test": "^1.63.0",
+    "http-server": "^14.1.1"
+  }
+}
