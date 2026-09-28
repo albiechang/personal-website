@@ -52,6 +52,6 @@
     </footer>
     {% if visualization %}<script type="module" src="{{ visualization.module | url }}"></script>{% endif %}
     {% if pageModule %}<script type="module" src="{{ pageModule | url }}"></script>{% endif %}
-    <script type="module" src="{{ '/assets/js/visual-motif.js' | url }}"></script>
+    {% if page.url == '/' %}<script type="module" src="{{ '/assets/js/visual-motif.js' | url }}"></script>{% endif %}
   </body>
 </html>

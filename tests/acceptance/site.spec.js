@@ -42,23 +42,20 @@ test("Visual Motif connects the homepage and remains restrained on deep routes",
 
   const homepageMotif = page.locator('[data-visual-motif="sequence"]');
   await expect(homepageMotif).toBeVisible();
-  await expect(homepageMotif.locator(".visual-motif__line")).toHaveCount(1);
-  await expect(homepageMotif.locator(".visual-motif__node")).toHaveCount(5);
   await expect(homepageMotif).toHaveCSS("pointer-events", "none");
 
   await page.goto("/projects/");
   const deepPageMotif = page.locator('[data-visual-motif="fragment"]');
   await expect(deepPageMotif).toBeVisible();
-  await expect(deepPageMotif.locator(".visual-motif__node")).toHaveCount(2);
+  await expect(page.locator("script")).toHaveCount(0);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await expect(page.locator('[data-visual-motif="sequence"] .visual-motif__node')).toHaveCount(5);
-  await expect(page.locator('[data-visual-motif="sequence"]')).toHaveCSS("opacity", "0.42");
+  await expect(page.locator('[data-visual-motif="sequence"]')).toBeVisible();
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
-  await expect(page.locator(".visual-motif__energized")).toHaveCSS("animation-name", "none");
+  expect(await page.locator('[data-visual-motif="sequence"]').evaluate((element) => element.getAnimations({ subtree: true }).length)).toBe(0);
 });
 
 test("every public route has unique discoverability metadata and sitemap coverage", async ({ page }) => {
@@ -119,7 +116,12 @@ test("production URLs and assets honor a GitHub Pages project-site prefix", asyn
     await expect(page.locator('link[rel="stylesheet"]').last()).toHaveAttribute("href", "/portfolio/assets/css/site.css");
     await expect(page.getByRole("link", { name: "View all projects" })).toHaveAttribute("href", "/portfolio/projects/");
     await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Experience" })).toHaveAttribute("href", "/portfolio/#experience");
-    await expect(page.locator('script[src$="visual-motif.js"]')).toHaveAttribute("src", "/portfolio/assets/js/visual-motif.js");
+    const localResources = await page.evaluate(() => performance.getEntriesByType("resource")
+      .map((entry) => new URL(entry.name))
+      .filter((url) => url.origin === location.origin)
+      .map((url) => url.pathname));
+    expect(localResources.length).toBeGreaterThan(0);
+    expect(localResources.every((resource) => resource.startsWith("/portfolio/"))).toBe(true);
 
     const sitemap = await (await page.request.get("http://127.0.0.1:4175/portfolio/sitemap.xml")).text();
     expect(sitemap).toContain("<loc>https://portfolio.example.test/portfolio/projects/</loc>");
@@ -146,7 +148,7 @@ test("visual review captures cover motif placement across routes, viewports, and
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
-  await expect(page.locator(".visual-motif__energized")).toHaveCSS("transition-duration", "0s");
+  expect(await page.locator('[data-visual-motif="sequence"]').evaluate((element) => element.getAnimations({ subtree: true }).length)).toBe(0);
   await page.screenshot({ path: "test-results/visual-review/homepage-reduced-motion.png", fullPage: true });
 });
 

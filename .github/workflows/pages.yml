@@ -41,6 +41,7 @@ jobs:
         run: npm run build
       - name: Validate deployment-aware links
         env:
+          CHECK_EXTERNAL_LINKS: 1
           SITE_PATH_PREFIX: ${{ steps.pages.outputs.base_path }}
           SITE_URL: ${{ steps.pages.outputs.origin }}
         run: npm run check:links

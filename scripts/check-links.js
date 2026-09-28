@@ -1,11 +1,15 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { createDeploymentUrl } = require("./deployment-url");
 
 const outputRoot = path.resolve(process.argv[2] || "_site");
-const siteOrigin = process.env.SITE_URL || "http://localhost:8080";
-const rawPrefix = process.env.SITE_PATH_PREFIX || "/";
-const pathPrefix = rawPrefix === "/" ? "" : `/${rawPrefix.replace(/^\/+|\/+$/g, "")}`;
+const deploymentUrl = createDeploymentUrl({
+  siteUrl: process.env.SITE_URL,
+  pathPrefix: process.env.SITE_PATH_PREFIX
+});
+const pathPrefix = deploymentUrl.pathPrefix;
 const failures = [];
+const externalContactUrls = new Set();
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -47,6 +51,11 @@ for (const file of htmlFiles) {
   const route = publicRoute(file);
   const ids = new Set([...html.matchAll(/\sid=["']([^"']+)["']/g)].map((match) => match[1]));
   const attributes = [...html.matchAll(/\s(?:href|src)=["']([^"']+)["']/g)].map((match) => match[1]);
+  const contactRail = html.match(/<aside class=["']contact-rail["'][^>]*>([\s\S]*?)<\/aside>/)?.[1];
+  const contactReferences = contactRail
+    ? [...contactRail.matchAll(/\shref=["']([^"']+)["']/g)].map((match) => match[1])
+    : [];
+  if (contactReferences.length !== 2) record(`${route}: expected email and LinkedIn contact controls`);
 
   for (const reference of attributes) {
     if (!reference || reference.startsWith("data:")) continue;
@@ -61,7 +70,7 @@ for (const file of htmlFiles) {
 
     let target;
     try {
-      target = new URL(reference, `${siteOrigin}${pathPrefix}${route}`);
+      target = new URL(reference, deploymentUrl.canonical(route));
     } catch {
       record(`${route}: invalid URL ${reference}`);
       continue;
@@ -70,7 +79,16 @@ for (const file of htmlFiles) {
       record(`${route}: unsupported URL protocol ${reference}`);
       continue;
     }
-    if (target.origin !== new URL(siteOrigin).origin) continue;
+    if (target.origin !== deploymentUrl.origin) {
+      if (contactReferences.includes(reference)) {
+        if (target.protocol !== "https:" || !/(^|\.)linkedin\.com$/i.test(target.hostname)) {
+          record(`${route}: invalid LinkedIn contact control ${reference}`);
+        } else {
+          externalContactUrls.add(target.href);
+        }
+      }
+      continue;
+    }
     if (pathPrefix && reference.startsWith("/") && !target.pathname.startsWith(`${pathPrefix}/`)) {
       record(`${route}: root-relative reference omits deployment prefix ${reference}`);
     }
@@ -85,7 +103,7 @@ for (const file of htmlFiles) {
   }
 
   const canonical = html.match(/<link rel=["']canonical["'] href=["']([^"']+)["']/)?.[1];
-  const expectedCanonical = `${siteOrigin}${pathPrefix}${route}`;
+  const expectedCanonical = deploymentUrl.canonical(route);
   if (canonical !== expectedCanonical) record(`${route}: canonical is ${canonical || "missing"}; expected ${expectedCanonical}`);
 }
 
@@ -95,14 +113,35 @@ if (!fs.existsSync(sitemapPath)) {
 } else {
   const sitemap = fs.readFileSync(sitemapPath, "utf8");
   for (const route of routes) {
-    const expected = `<loc>${siteOrigin}${pathPrefix}${route}</loc>`;
+    const expected = `<loc>${deploymentUrl.canonical(route)}</loc>`;
     if (!sitemap.includes(expected)) record(`sitemap.xml: missing ${expected}`);
   }
 }
 
-if (failures.length) {
-  console.error(`Broken-link validation failed (${failures.length}):\n${failures.map((failure) => `- ${failure}`).join("\n")}`);
-  process.exitCode = 1;
-} else {
-  console.log(`Validated ${htmlFiles.length} public HTML routes, their anchors and assets, external contact URL shapes, canonicals, and sitemap entries.`);
+async function finishValidation() {
+  if (process.env.CHECK_EXTERNAL_LINKS === "1") {
+    for (const url of externalContactUrls) {
+      try {
+        const response = await fetch(url, {
+          method: "HEAD",
+          redirect: "follow",
+          signal: AbortSignal.timeout(10_000),
+          headers: { "user-agent": "Albert-Chang-Professional-Record-Link-Check" }
+        });
+        if ([404, 410].includes(response.status)) record(`external contact is broken (${response.status}): ${url}`);
+      } catch (error) {
+        record(`external contact is unreachable: ${url} (${error.message})`);
+      }
+    }
+  }
+
+  if (failures.length) {
+    console.error(`Broken-link validation failed (${failures.length}):\n${failures.map((failure) => `- ${failure}`).join("\n")}`);
+    process.exitCode = 1;
+  } else {
+    const externalMode = process.env.CHECK_EXTERNAL_LINKS === "1" ? " and external contact reachability" : "";
+    console.log(`Validated ${htmlFiles.length} public HTML routes, anchors, assets, contact controls, canonicals, sitemap entries${externalMode}.`);
+  }
 }
+
+finishValidation();
