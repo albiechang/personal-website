@@ -1,0 +1,15 @@
+.project-visualization {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+}
+
+.project-visualization h2 { margin-block: 0.4rem 0.75rem; color: var(--color-context); }
+.visualization-fallback { display: grid; gap: 0.5rem; padding-left: 1.25rem; }
+.visualization-controls { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+.visualization-controls button { min-height: 44px; padding: 0.55rem 0.85rem; color: var(--color-text); background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small); font: inherit; cursor: pointer; }
+.visualization-controls button:hover { border-color: var(--color-accent); }
+.visualization-controls button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+.visualization-controls button[aria-pressed="true"] { border-color: var(--color-context); box-shadow: inset 0 -4px 0 var(--color-accent); font-weight: 700; }
+.visualization-output { min-height: 1.6em; font-family: var(--font-mono); font-weight: 700; }
+.visualization-status { color: var(--color-accent); font-weight: 700; }

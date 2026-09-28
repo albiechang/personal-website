@@ -2,6 +2,7 @@
   <figure class="project-card__media">
     <img src="{{ project.data.media.src | url }}" alt="{{ project.data.media.alt }}" loading="lazy" style="object-position: {{ project.data.media.focalPoint }}">
     <p class="project-card__summary">{{ project.data.summary }}</p>
+    {% if project.data.status == "ongoing" %}<span class="project-card__status">Ongoing</span>{% endif %}
     <figcaption class="project-card__title">{{ project.data.title }}</figcaption>
   </figure>
 </a>

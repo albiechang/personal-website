@@ -53,6 +53,110 @@ test("one Markdown Project is featured, collected, and available on its own page
   await expect(page.getByRole("link", { name: "Back to all projects" })).toHaveAttribute("href", "/projects/");
 });
 
+test("Project Collection is curated, newest-first, and labels ongoing work", async ({ page }) => {
+  await page.goto("/projects/");
+
+  const cards = page.locator(".project-card");
+  await expect(cards).toHaveCount(4);
+  await expect(cards.nth(0)).toContainText("Grid Resilience Scenario Explorer");
+  await expect(cards.nth(1)).toContainText("Renewable Infrastructure Field Notes");
+  await expect(cards.nth(2)).toContainText("Solar Notes");
+  await expect(cards.nth(3)).toContainText("Water Systems Design Notebook for Early-Stage Alternatives");
+  await expect(cards.nth(0).getByText("Ongoing", { exact: true })).toBeVisible();
+
+  await page.goto("/");
+  await expect(page.locator("#featured-projects .project-card")).toHaveCount(2);
+  await expect(page.getByRole("link", { name: "View all projects" })).toHaveCount(1);
+});
+
+test("Project Pages support varied compositions and safe rich media", async ({ page }) => {
+  await page.goto("/projects/solar-notes/");
+  await expect(page.getByRole("heading", { level: 1, name: "Solar Notes" })).toBeVisible();
+  await expect(page.getByText("Placeholder collaborator — demonstration only")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Public reference" })).toHaveAttribute("rel", /noopener/);
+  await expect(page.locator("figure.evidence-figure figcaption")).toContainText("Demonstration artwork");
+  const video = page.locator("video");
+  await expect(video).toHaveAttribute("controls", "");
+  await expect(video).toHaveAttribute("preload", "none");
+  await expect(video).not.toHaveAttribute("autoplay", "");
+  await expect(video).toHaveAttribute("poster", /project-solar-notes\.svg$/);
+  await expect(video.locator('track[kind="captions"]')).toHaveAttribute("src", /demo-captions\.vtt$/);
+  await expect(page.getByText("Video transcript", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to all projects" })).toBeVisible();
+
+  await page.goto("/projects/grid-resilience-scenario-explorer/");
+  await expect(page.locator(".project-composition--scenario-explorer")).toBeVisible();
+  await expect(page.getByText("Ongoing Project", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to all projects" })).toBeVisible();
+
+  await page.goto("/projects/water-systems-design-notebook/");
+  await expect(page.locator(".project-meta")).not.toContainText("Collaborators");
+  await expect(page.locator(".project-meta")).not.toContainText("Links");
+});
+
+test("Project Visualization assets are isolated, deferred, and resilient", async ({ page, browser }) => {
+  await page.goto("/projects/solar-notes/");
+  await expect(page.locator('link[href*="/visualizations/"]')).toHaveCount(0);
+  await expect(page.locator('script[src*="/visualizations/"]')).toHaveCount(0);
+
+  let requestedData = false;
+  page.on("request", (request) => {
+    if (request.url().includes("scenario-comparison.json")) requestedData = true;
+  });
+  await page.setViewportSize({ width: 1280, height: 700 });
+  await page.goto("/projects/grid-resilience-scenario-explorer/");
+  await expect(page.locator('link[href$="scenario-comparison.css"]')).toHaveCount(1);
+  await expect(page.locator('script[src$="scenario-comparison.js"]')).toHaveAttribute("type", "module");
+  expect(requestedData).toBe(false);
+
+  const visualization = page.getByRole("region", { name: "Placeholder grid scenario comparison" });
+  await visualization.scrollIntoViewIfNeeded();
+  await expect.poll(() => requestedData).toBe(true);
+  await expect(visualization).toHaveAttribute("data-state", "ready");
+  await expect(visualization.getByText("Scenario A — Steady", { exact: true })).toBeVisible();
+  const scenarioB = visualization.getByRole("button", { name: "Emphasize Scenario B" });
+  await scenarioB.focus();
+  await page.keyboard.press("Enter");
+  await expect(scenarioB).toHaveAttribute("aria-pressed", "true");
+  await expect(visualization.getByText("Scenario B: Variable", { exact: true })).toBeVisible();
+
+  const noScriptContext = await browser.newContext({ javaScriptEnabled: false });
+  const noScriptPage = await noScriptContext.newPage();
+  await noScriptPage.goto("http://127.0.0.1:4173/projects/grid-resilience-scenario-explorer/");
+  await expect(noScriptPage.getByText("Scenario A — Steady", { exact: true })).toBeVisible();
+  await noScriptContext.close();
+
+  const failedContext = await browser.newContext();
+  const failedPage = await failedContext.newPage();
+  await failedPage.route("**/scenario-comparison.json", (route) => route.abort());
+  await failedPage.goto("http://127.0.0.1:4173/projects/grid-resilience-scenario-explorer/");
+  const failedVisualization = failedPage.getByRole("region", { name: "Placeholder grid scenario comparison" });
+  await failedVisualization.scrollIntoViewIfNeeded();
+  await expect(failedVisualization).toHaveAttribute("data-state", "failed");
+  await expect(failedVisualization.getByText("Scenario A — Steady", { exact: true })).toBeVisible();
+  await expect(failedVisualization.getByText(/interactive comparison could not start/i)).toBeVisible();
+  await failedContext.close();
+});
+
+test("Project Collection reflows from three to two to one columns", async ({ page }) => {
+  const columnCount = () => page.locator(".project-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length);
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/projects/");
+  await expect(page.getByText(/Choose a Project to explore its evidence/i)).toBeVisible();
+  expect(await columnCount()).toBe(3);
+  await expect(page.locator('.project-card img[alt="Abstract diagram of three connected grid scenarios"]')).toHaveCSS("object-position", "58% 45%");
+
+  await page.setViewportSize({ width: 900, height: 800 });
+  expect(await columnCount()).toBe(2);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await columnCount()).toBe(1);
+  await expect(page.locator(".project-card__summary")).toHaveCount(4);
+  for (const summary of await page.locator(".project-card__summary").all()) await expect(summary).toBeHidden();
+  await expect(page.getByText("View project", { exact: true })).toHaveCount(0);
+});
+
 test("keyboard and responsive visitors retain clear navigation and Project access", async ({ page, browser }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/projects/");

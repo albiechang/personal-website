@@ -1,0 +1,7 @@
+{
+  "scenarios": [
+    { "id": "a", "name": "Scenario A", "signal": "Steady" },
+    { "id": "b", "name": "Scenario B", "signal": "Variable" },
+    { "id": "c", "name": "Scenario C", "signal": "Constrained" }
+  ]
+}

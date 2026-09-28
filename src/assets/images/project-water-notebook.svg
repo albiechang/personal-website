@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Water path and design checkpoints</title><desc id="desc">Abstract demonstration artwork.</desc>
+  <rect width="800" height="600" fill="#f5f0e6"/><path d="M60 170c180 0 130 250 310 250s140-250 370-250" fill="none" stroke="#182b49" stroke-width="34"/><g fill="#fff" stroke="#c41230" stroke-width="10"><circle cx="180" cy="275" r="38"/><circle cx="400" cy="410" r="38"/><circle cx="620" cy="245" r="38"/></g>
+</svg>

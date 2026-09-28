@@ -5,12 +5,19 @@ layout: base.njk
   <a class="back-link" href="{{ '/projects/' | url }}">← Back to all projects</a>
   <header class="project-header">
     <p class="eyebrow">Project · {{ displayDate }}</p>
+    {% if status == "ongoing" %}<p class="project-status">Ongoing Project</p>{% endif %}
     <h1>{{ title }}</h1>
     <p class="project-summary">{{ summary }}</p>
     <dl class="project-meta">
       <div><dt>Role</dt><dd>{{ role }}</dd></div>
       <div><dt>Tags</dt><dd>{% for tag in tags %}<span>{{ tag }}</span>{% endfor %}</dd></div>
+      {% if collaborators %}<div><dt>Collaborators</dt><dd>{% for collaborator in collaborators %}<span>{{ collaborator }}</span>{% endfor %}</dd></div>{% endif %}
+      {% if links %}<div><dt>Links</dt><dd>{% for link in links %}<a href="{{ link.url }}" rel="noopener">{{ link.label }}</a>{% endfor %}</dd></div>{% endif %}
     </dl>
   </header>
-  <div class="project-body">{{ content | safe }}</div>
+  {% if customComposition == "scenario-explorer" %}
+    {% include "project-compositions/scenario-explorer.njk" %}
+  {% else %}
+    <div class="project-body">{{ content | safe }}</div>
+  {% endif %}
 </article>

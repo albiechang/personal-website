@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ '/assets/css/site.css' | url }}">
+    {% if visualization %}<link rel="stylesheet" href="{{ visualization.styles | url }}">{% endif %}
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -34,5 +35,6 @@
       <div><a href="mailto:{{ site.email }}">Email</a><a href="{{ site.linkedin }}">LinkedIn</a></div>
       <small>© 2026 Albert Chang. A Professional Record in progress.</small>
     </footer>
+    {% if visualization %}<script type="module" src="{{ visualization.module | url }}"></script>{% endif %}
   </body>
 </html>
