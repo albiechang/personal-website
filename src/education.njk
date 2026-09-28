@@ -14,7 +14,7 @@ description: Albert Chang’s Education Journey, with provisional institution fa
   <h2 id="education-facts-title">Institution and degree facts</h2>
   <div class="education-fact-grid">
     {% for institution in education.institutions %}
-      <article class="education-fact education-fact--{{ institution.context }}">
+      <article class="education-fact education-fact--{{ institution.institutionAccent }}">
         <h3>{{ institution.name }}</h3>
         <dl>
           <div><dt>Degree</dt><dd>{{ institution.degree }}</dd></div>
@@ -32,7 +32,7 @@ description: Albert Chang’s Education Journey, with provisional institution fa
   <h2 id="education-stages-title">Formative stages and decisions</h2>
   <div class="education-stage-grid">
     {% for institution in education.institutions %}
-      <article class="education-stage education-stage--{{ institution.context }}">
+      <article class="education-stage education-stage--{{ institution.institutionAccent }}">
         <h3>{{ institution.stageTitle }}</h3>
         <p>{{ institution.stageSummary }}</p>
       </article>

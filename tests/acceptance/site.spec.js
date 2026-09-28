@@ -1,4 +1,6 @@
 const { test, expect } = require("@playwright/test");
+const { execFileSync } = require("node:child_process");
+const path = require("node:path");
 const httpServer = require("http-server");
 
 let server;
@@ -46,6 +48,11 @@ test("Experience Timeline is newest-first, complete without scripts, and respect
     await expect(entry.getByText(/Organization name pending confirmation/)).toBeVisible();
     await expect(entry.getByText(/Role pending confirmation/)).toBeVisible();
     await expect(entry.getByText(/Location pending confirmation/)).toBeVisible();
+    await expect(entry.getByText(/date pending confirmation/i)).toBeVisible();
+    const marker = entry.locator(".experience-marker");
+    await expect(marker).toHaveCount(1);
+    await expect(marker).toHaveCSS("width", "12px");
+    await expect(marker).toHaveCSS("height", "12px");
   }
 
   const noScriptContext = await browser.newContext({ javaScriptEnabled: false });
@@ -57,7 +64,10 @@ test("Experience Timeline is newest-first, complete without scripts, and respect
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
-  await expect(page.getByRole("region", { name: "Experience" })).toHaveAttribute("data-timeline-motion", "disabled");
+  const reducedTimeline = page.getByRole("list", { name: "Experience Timeline" });
+  expect(await reducedTimeline.evaluate((element) => getComputedStyle(element, "::after").display)).toBe("none");
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(reducedTimeline.locator(".is-active")).toHaveCount(0);
 });
 
 test("Education preview leads to a coherent Education Journey with canonical Project links", async ({ page }) => {
@@ -86,6 +96,29 @@ test("Education preview leads to a coherent Education Journey with canonical Pro
   await page.goto("/");
   await page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Education" }).click();
   await expect(page).toHaveURL(/\/education\/$/);
+});
+
+test("Education Journey remains coherent when optional sections are absent", async ({ page }) => {
+  const output = "test-results/education-without-optional-sections";
+  const eleventyCommand = path.resolve(path.dirname(require.resolve("@11ty/eleventy")), "..", "cmd.cjs");
+  execFileSync(process.execPath, [eleventyCommand, "--output", output], {
+    cwd: process.cwd(),
+    env: { ...process.env, EDUCATION_OPTIONAL_SECTIONS: "omit" },
+    stdio: "pipe"
+  });
+  const variantServer = httpServer.createServer({ root: output, cache: -1 });
+  await new Promise((resolve) => variantServer.listen(4174, "127.0.0.1", resolve));
+
+  try {
+    await page.goto("http://127.0.0.1:4174/education/");
+    await expect(page.getByRole("heading", { level: 1, name: "Education Journey" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Education facts" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Formative stages and decisions" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Leadership and service" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 2, name: "Selected academic Projects" })).toHaveCount(0);
+  } finally {
+    variantServer.close();
+  }
 });
 
 test("one Markdown Project is featured, collected, and available on its own page", async ({ page }) => {

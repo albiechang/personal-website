@@ -5,14 +5,11 @@ if (timeline) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   const disableEnhancement = () => {
-    timeline.dataset.timelineMotion = "disabled";
     timeline.style.removeProperty("--timeline-progress");
     entries.forEach((entry) => entry.classList.remove("is-active"));
   };
 
   const enableEnhancement = () => {
-    timeline.dataset.timelineMotion = "enabled";
-
     const update = () => {
       const bounds = timeline.getBoundingClientRect();
       const viewportMarker = window.innerHeight * 0.55;
