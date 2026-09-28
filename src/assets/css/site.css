@@ -190,4 +190,6 @@ main { position: relative; overflow: hidden; }
   .visual-motif__energized { animation: none !important; transition: none !important; }
   .project-card:hover img, .project-card:focus-visible img,
   .project-card:hover .project-card__summary, .project-card:focus-visible .project-card__summary { transform: none; }
+  .project-card__summary { bottom: 4.5rem; transform: none; }
+  .project-card:hover .project-card__title, .project-card:focus-visible .project-card__title { top: auto; bottom: 1rem; }
 }

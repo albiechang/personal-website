@@ -67,9 +67,21 @@ test("deep routes stay script-free and reduced-motion rendering stays static", a
 
   await page.goto("/projects/");
   const card = page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
+  await card.scrollIntoViewIfNeeded();
+  const image = card.getByRole("img");
+  const title = card.getByText("Renewable Infrastructure Field Notes", { exact: true });
+  const summary = card.getByText(/An honest demonstration/);
+  const geometryBeforeHover = {
+    image: await image.boundingBox(),
+    title: await title.boundingBox(),
+    summary: await summary.boundingBox()
+  };
   await card.hover();
-  await expect(card.getByRole("img")).toHaveCSS("transform", "none");
-  await expect(card.getByText(/An honest demonstration/)).toHaveCSS("transform", "none");
+  expect({
+    image: await image.boundingBox(),
+    title: await title.boundingBox(),
+    summary: await summary.boundingBox()
+  }).toEqual(geometryBeforeHover);
 });
 
 test("every public route has unique discoverability metadata and sitemap coverage", async ({ page }) => {
