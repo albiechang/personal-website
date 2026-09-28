@@ -15,14 +15,14 @@
   </div>
 {% endmacro %}
 
-{% macro video(poster, captions, transcript) %}
-  <section class="evidence-video" aria-labelledby="video-heading">
-    <h2 id="video-heading">Video evidence placeholder</h2>
-    <video controls preload="none" poster="{{ poster | url }}" aria-describedby="video-transcript">
+{% macro video(identifier, poster, captions, transcript) %}
+  <section class="evidence-video" aria-labelledby="{{ identifier }}-heading">
+    <h2 id="{{ identifier }}-heading">Video evidence placeholder</h2>
+    <video controls preload="none" poster="{{ poster | url }}" aria-describedby="{{ identifier }}-transcript">
       <track kind="captions" src="{{ captions | url }}" srclang="en" label="English" default>
       Video playback is not included in this demonstration. The transcript remains available below.
     </video>
-    <details id="video-transcript"><summary>Video transcript</summary><p>{{ transcript }}</p></details>
+    <details id="{{ identifier }}-transcript"><summary>Video transcript</summary><p>{{ transcript }}</p></details>
   </section>
 {% endmacro %}
 
