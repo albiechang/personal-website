@@ -25,38 +25,39 @@
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <header class="site-header">
-      <a class="wordmark" href="{{ '/' | url }}">Albert Chang</a>
-      <nav aria-label="Primary">
-        <a href="{{ '/projects/' | url }}">Projects</a>
-        <a href="{{ '/#experience' | url }}">Experience</a>
-        <a href="{{ '/#about' | url }}">About</a>
-        <a href="{{ '/education/' | url }}">Education</a>
-      </nav>
-      <aside class="contact-rail" aria-label="Contact Albert Chang">
-        <a href="mailto:{{ site.email }}" aria-label="Email Albert Chang" title="Email Albert Chang">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M3.75 5.75h16.5v12.5H3.75zM4.5 6.5l7.5 6 7.5-6" />
-          </svg>
-        </a>
-        <a href="{{ site.linkedin }}" aria-label="Albert Chang on LinkedIn" title="Albert Chang on LinkedIn" rel="me noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M6.25 8.25v9.5M6.25 5.5v.1M10.25 17.75v-9.5m0 4.25c.75-2.75 6.5-3.25 6.5 1.25v4M3.75 3.75h16.5v16.5H3.75z" />
-          </svg>
-        </a>
-      </aside>
-    </header>
+    <div class="site-frame">
+      <header class="site-header">
+        <a class="wordmark" href="{{ '/' | url }}">Albert Chang</a>
+        <nav aria-label="Primary">
+          <a href="{{ '/projects/' | url }}">Projects</a>
+          <a href="{{ '/#experience' | url }}">Experience</a>
+          <a href="{{ '/#about' | url }}">About</a>
+          <a href="{{ '/education/' | url }}">Education</a>
+        </nav>
+        <aside class="contact-rail" aria-label="Contact Albert Chang">
+          <a href="mailto:{{ site.email }}" aria-label="Email Albert Chang" title="Email Albert Chang">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M3.75 5.75h16.5v12.5H3.75zM4.5 6.5l7.5 6 7.5-6" />
+            </svg>
+          </a>
+          <a href="{{ site.linkedin }}" aria-label="Albert Chang on LinkedIn" title="Albert Chang on LinkedIn" rel="me noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6.25 8.25v9.5M6.25 5.5v.1M10.25 17.75v-9.5m0 4.25c.75-2.75 6.5-3.25 6.5 1.25v4M3.75 3.75h16.5v16.5H3.75z" />
+            </svg>
+          </a>
+        </aside>
+      </header>
 
-    <main id="main-content">
-      {% include "visual-motif.njk" %}
-      <div class="page-content">{{ content | safe }}</div>
-    </main>
+      <main id="main-content">
+        {% include "visual-motif.njk" %}
+        <div class="page-content">{{ content | safe }}</div>
+      </main>
 
-    <footer class="site-footer">
-      <div><strong>{{ site.name }}</strong><span>{{ site.brandLine }}</span></div>
-      <div><a href="mailto:{{ site.email }}">Email</a><a href="{{ site.linkedin }}">LinkedIn</a></div>
-      <small>© 2026 Albert Chang. A Professional Record in progress.</small>
-    </footer>
+      <footer class="site-footer">
+        <div><strong>{{ site.name }}</strong><span>{{ site.brandLine }}</span></div>
+        <small>© 2026 Albert Chang.</small>
+      </footer>
+    </div>
     {% if visualization %}<script type="module" src="{{ visualization.module | url }}"></script>{% endif %}
     {% if pageModule %}<script type="module" src="{{ pageModule | url }}"></script>{% endif %}
     {% if page.url == '/' %}<script type="module" src="{{ '/assets/js/visual-motif.js' | url }}"></script>{% endif %}

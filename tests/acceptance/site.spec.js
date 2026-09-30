@@ -43,16 +43,27 @@ test("visitor can understand and navigate the Professional Record homepage", asy
     "A community-centered engineer developing renewable-energy projects that turn climate goals into practical infrastructure."
   );
   await expect(page.getByRole("main").getByRole("heading", { level: 2 })).toHaveText([
-    "Experience Timeline",
-    "A connected first-person narrative, still in progress.",
-    "Learning in context, not just credentials."
+    "Experience",
+    "About",
+    "Education"
   ]);
+  await expect(page.locator(".hero .intro")).toHaveCount(0);
+  await expect(page.locator("#about")).toContainText(
+    "Growing up, my family had air conditioning, but high electricity bills meant rarely using it."
+  );
+  await expect(page.locator("#about")).toContainText(
+    "Today, I want to help close the gap between how energy systems are modeled and how they are experienced."
+  );
+  await expect(page.getByRole("link", { name: "Explore my education journey" })).toHaveAttribute(
+    "href",
+    "/education/"
+  );
   await expect(page.getByRole("link", { name: "Email Albert Chang" })).toHaveAttribute("href", /^mailto:/);
   await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toHaveAttribute(
     "href",
     "https://www.linkedin.com/in/albertcc05/"
   );
-  await expect(page.getByRole("contentinfo")).toContainText("Albert Chang");
+  await expect(page.getByRole("contentinfo").locator("small")).toHaveText("© 2026 Albert Chang.");
 });
 
 test("representative public routes have no automatically detectable accessibility violations", async ({ page }) => {
@@ -218,6 +229,33 @@ test("visual review captures cover motif placement across routes, viewports, and
   await page.screenshot({ path: "test-results/visual-review/homepage-reduced-motion.png", fullPage: true });
 });
 
+test("site frame and power-flow motif stay intentional and clear of content", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+
+  const frame = page.locator(".site-frame");
+  const frameBox = await frame.boundingBox();
+  expect(frameBox.width).toBeCloseTo(1024, 0);
+  expect(Math.abs(frameBox.x - ((1440 - frameBox.width) / 2))).toBeLessThan(1);
+  await expect(frame).toHaveCSS("border-left-style", "solid");
+  await expect(frame).toHaveCSS("border-right-style", "solid");
+
+  const motif = page.locator('[data-visual-motif="sequence"]');
+  const motifBox = await motif.boundingBox();
+  const heroCopyBox = await page.locator(".hero-copy").boundingBox();
+  expect(motifBox.x + motifBox.width).toBeLessThanOrEqual(heroCopyBox.x);
+  await expect(motif.locator(".visual-motif__node")).toHaveCount(3);
+  await expect(motif.locator(".visual-motif__line")).toHaveCSS("opacity", "0.7");
+  await expect(motif.locator(".visual-motif__energized")).toHaveCSS("opacity", "0.85");
+
+  await page.goto("/projects/");
+  const fragment = page.locator('[data-visual-motif="fragment"]');
+  await expect(fragment).toHaveCount(1);
+  const fragmentBox = await fragment.boundingBox();
+  const introductionBox = await page.locator(".page-intro").boundingBox();
+  expect(fragmentBox.x + fragmentBox.width).toBeLessThanOrEqual(introductionBox.x + 49);
+});
+
 test("editorial palette keeps text and controls readable without color-only states", async ({ page }) => {
   await page.goto("/");
 
@@ -234,7 +272,7 @@ test("editorial palette keeps text and controls readable without color-only stat
       const values = [luminance(foreground), luminance(background)].sort((left, right) => right - left);
       return (values[0] + 0.05) / (values[1] + 0.05);
     };
-    return [".intro", ".eyebrow", ".text-link", ".section-shell h2", ".contact-rail a"].map((selector) => {
+    return [".narrative-section p", ".eyebrow", ".text-link", ".section-shell h2", ".contact-rail a"].map((selector) => {
       const element = document.querySelector(selector);
       const style = getComputedStyle(element);
       let background = style.backgroundColor;
@@ -294,7 +332,7 @@ test("Education preview leads to a coherent Education Journey with canonical Pro
   await page.goto("/");
 
   await expect(page.getByRole("region", { name: "Education Journey preview" })).toContainText("Carnegie Mellon University");
-  await page.getByRole("link", { name: "Explore the Education Journey" }).click();
+  await page.getByRole("link", { name: "Explore my education journey" }).click();
   await expect(page).toHaveURL(/\/education\/$/);
   await expect(page.getByRole("heading", { level: 1, name: "Education Journey" })).toBeVisible();
 
@@ -540,7 +578,7 @@ test("keyboard and responsive visitors retain clear navigation and Project acces
   await page.goto("/projects/");
   const mobileCard = page.getByRole("link", { name: /Renewable Infrastructure Field Notes/ });
   const mobileSummary = page.getByText(/An honest demonstration/).first();
-  expect((await mobileCard.boundingBox()).width).toBeGreaterThan(340);
+  expect((await mobileCard.boundingBox()).width).toBeGreaterThan(320);
   await expect(mobileSummary).toBeHidden();
   await tabUntilFocused(page, mobileCard);
   await expect(mobileCard).toBeFocused();
@@ -576,7 +614,7 @@ test("compact contact controls remain persistent without covering document conte
     const contactBox = await contactRail.boundingBox();
     const mainBox = await page.getByRole("main").boundingBox();
     if (viewport.width <= 768) {
-      expect(contactBox.y, JSON.stringify({ viewport, bannerBox, contactBox, mainBox })).toBeGreaterThanOrEqual(navigationBox.y);
+      expect(contactBox.y + contactBox.height, JSON.stringify({ viewport, bannerBox, contactBox, mainBox })).toBeLessThanOrEqual(navigationBox.y);
     } else {
       expect(contactBox.x).toBeGreaterThanOrEqual(navigationBox.x + navigationBox.width);
     }
@@ -589,7 +627,7 @@ test("compact contact controls remain persistent without covering document conte
   }
 });
 
-test("wide-screen contact controls remain at the lower-right viewport edge", async ({ page }) => {
+test("wide-screen navigation and contact controls share the top bar", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/projects/");
 
@@ -602,11 +640,14 @@ test("wide-screen contact controls remain at the lower-right viewport edge", asy
   await expect(linkedInControl).toHaveCSS("border-top-style", "solid");
   const emailBox = await emailControl.boundingBox();
   const linkedInBox = await linkedInControl.boundingBox();
-  expect(linkedInBox.y).toBeGreaterThanOrEqual(emailBox.y + emailBox.height);
-  expect(Math.abs(linkedInBox.x - emailBox.x)).toBeLessThan(1);
+  expect(linkedInBox.x).toBeGreaterThanOrEqual(emailBox.x + emailBox.width);
+  expect(Math.abs(linkedInBox.y - emailBox.y)).toBeLessThan(1);
   const box = await contactRail.boundingBox();
-  expect(box.x + box.width).toBeGreaterThan(1200);
-  expect(box.y + box.height).toBeGreaterThan(720);
+  const bannerBox = await page.getByRole("banner").boundingBox();
+  const navigationBox = await page.getByRole("navigation", { name: "Primary" }).boundingBox();
+  expect(navigationBox.x).toBeGreaterThan(400);
+  expect(box.x).toBeGreaterThanOrEqual(navigationBox.x + navigationBox.width);
+  expect(box.y + box.height).toBeLessThanOrEqual(bannerBox.y + bannerBox.height);
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(contactRail).toBeInViewport();
