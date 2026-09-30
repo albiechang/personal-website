@@ -9,7 +9,7 @@ Read `CONTEXT.md` and relevant files in `docs/adr/` before changing domain langu
 ## Architecture
 
 - Eleventy generates deployable HTML in `_site/`; never commit generated output.
-- Project authoring lives in `src/projects/*.md`. Shared Project metadata drives Featured Projects, the Project Collection, and each Project Page.
+- Project authoring lives in `src/projects/*.md`. Shared Project metadata drives the Project Collection and each Project Page.
 - Nunjucks layouts live in `src/_layouts/`; reusable fragments live in `src/_includes/`.
 - Site-wide structured data lives in `src/_data/`.
 - Static CSS and images live in `src/assets/` and are copied through unchanged.
@@ -41,7 +41,8 @@ To exercise a future GitHub Pages project-site prefix locally, set `SITE_PATH_PR
 
 ## Content and interaction rules
 
-- Use the glossary terms from `CONTEXT.md`, including Project, Featured Project, Project Collection, Project Page, and Professional Record.
+- Use the glossary terms from `CONTEXT.md`, including Project, Project Collection, Project Page, and Professional Record.
+- Keep the homepage flow as hero, Experience Timeline, About, and Education preview. Keep Projects accessible through the primary-navigation Projects destination rather than duplicating Project previews on the homepage.
 - Keep placeholder content explicit and honest. Do not invent achievements, employers, collaborators, outcomes, or credentials.
 - Keep Project Pages compositionally flexible. Shared layouts provide the global shell and essential metadata, not a required case-study outline.
 - Project Cards are full semantic links with an always-visible title. Summaries appear on pointer hover and keyboard focus, and remain hidden on compact touch/mobile layouts.
@@ -49,8 +50,8 @@ To exercise a future GitHub Pages project-site prefix locally, set `SITE_PATH_PR
 - Preserve semantic HTML, skip navigation, visible focus, touch-friendly targets, reflow, and reduced-motion support.
 - Do not add analytics, a contact form, authentication, a CMS, university marks, or employer logos.
 
-## Current placeholders
+## Current content state
 
-- The Brand Line, portrait, About narrative, Experience Timeline data, Education Journey details, and real Project content still need Albert's verified input.
-- `src/_data/site.js` currently links the LinkedIn control to LinkedIn's home page until the final public profile URL is supplied.
+- The Brand Line, LinkedIn profile URL, and Experience Timeline data are verified inputs from Albert.
+- The portrait, About narrative, Education Journey details, real Project content, and final media still need Albert's verified input.
 - `src/projects/renewable-infrastructure-field-notes.md` is explicitly a demonstration Project and must not be presented as completed real work.

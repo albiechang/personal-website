@@ -16,12 +16,8 @@ _Avoid_: Thesis, mission statement
 A body of work that serves as the portfolio's primary evidence of Albert's engineering practice and professional interests. A project may include narrative, media, technical artifacts, and interactive material appropriate to that work.
 _Avoid_: Portfolio item, tile
 
-**Featured Project**:
-A Project selected for the homepage because it best represents Albert's current direction or range. Featured status is editorial emphasis, not a different kind of Project.
-_Avoid_: Primary project, promoted content
-
 **Project Collection**:
-The complete set of public Projects documented by the portfolio, including those not featured on the homepage.
+The complete set of public Projects documented by the portfolio.
 _Avoid_: Gallery, feed
 
 **Project Page**:

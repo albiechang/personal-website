@@ -1,5 +1,7 @@
 # Personal Portfolio MVP completion report
 
+> Historical snapshot: this report records the MVP at commit `0c8d9b7`. Post-MVP homepage, identity, contact, and verified Experience changes are recorded in `../homepage-structure-refresh/spec.md`.
+
 The MVP is verified through the generated production site and is ready for Albert's verified content inputs. The final acceptance run completed from a clean `npm ci` installation with 18 passing browser tests, 8 validated public HTML routes, and no broken internal links or missing sitemap entries.
 
 ## Verification

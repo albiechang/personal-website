@@ -29,11 +29,29 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page).toHaveTitle(/Albert Chang/);
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: /community-centered engineer/i })).toBeVisible();
-  await expect(page.getByText("Brand Line — placeholder").first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "See experience" })).toHaveCount(0);
+  await expect(page.getByText("Connecting energy systems to the people they serve.").first()).toBeVisible();
   await expect(page.getByText("Portrait placeholder")).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Primary" })).toContainText("Projects");
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link")).toHaveText([
+    "Projects",
+    "Experience",
+    "About",
+    "Education"
+  ]);
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toHaveText(
+    "A community-centered engineer developing renewable-energy projects that turn climate goals into practical infrastructure."
+  );
+  await expect(page.getByRole("main").getByRole("heading", { level: 2 })).toHaveText([
+    "Experience Timeline",
+    "A connected first-person narrative, still in progress.",
+    "Learning in context, not just credentials."
+  ]);
   await expect(page.getByRole("link", { name: "Email Albert Chang" })).toHaveAttribute("href", /^mailto:/);
-  await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toHaveAttribute("href", /^https:/);
+  await expect(page.getByRole("link", { name: "Albert Chang on LinkedIn" })).toHaveAttribute(
+    "href",
+    "https://www.linkedin.com/in/albertcc05/"
+  );
   await expect(page.getByRole("contentinfo")).toContainText("Albert Chang");
 });
 
@@ -140,7 +158,7 @@ test("production URLs and assets honor a GitHub Pages project-site prefix", asyn
     await page.goto("http://127.0.0.1:4175/portfolio/");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://portfolio.example.test/portfolio/");
     await expect(page.locator('link[rel="stylesheet"]').last()).toHaveAttribute("href", "/portfolio/assets/css/site.css");
-    await expect(page.getByRole("link", { name: "View all projects" })).toHaveAttribute("href", "/portfolio/projects/");
+    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/portfolio/projects/");
     await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Experience" })).toHaveAttribute("href", "/portfolio/#experience");
     const localResources = await page.evaluate(() => performance.getEntriesByType("resource")
       .map((entry) => new URL(entry.name))
@@ -216,7 +234,7 @@ test("editorial palette keeps text and controls readable without color-only stat
       const values = [luminance(foreground), luminance(background)].sort((left, right) => right - left);
       return (values[0] + 0.05) / (values[1] + 0.05);
     };
-    return [".intro", ".eyebrow", ".button", ".section-shell h2", ".contact-rail a"].map((selector) => {
+    return [".intro", ".eyebrow", ".text-link", ".section-shell h2", ".contact-rail a"].map((selector) => {
       const element = document.querySelector(selector);
       const style = getComputedStyle(element);
       let background = style.backgroundColor;
@@ -226,7 +244,7 @@ test("editorial palette keeps text and controls readable without color-only stat
   });
 
   for (const result of contrastResults) expect(result.ratio, result.selector).toBeGreaterThanOrEqual(4.5);
-  await expect(page.getByText("Current entry placeholder")).toBeVisible();
+  await expect(page.getByText("VDE Americas")).toBeVisible();
   const projectsLink = page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Projects" });
   await projectsLink.focus();
   await expect(projectsLink).toHaveCSS("outline-style", "solid");
@@ -237,25 +255,31 @@ test("Experience Timeline is newest-first, complete without scripts, and respect
 
   const timeline = page.getByRole("list", { name: "Experience Timeline" });
   const entries = timeline.getByRole("listitem");
-  await expect(entries).toHaveCount(2);
-  await expect(entries.nth(0)).toContainText("Current entry placeholder");
-  await expect(entries.nth(1)).toContainText("Earlier entry placeholder");
-  for (const entry of [entries.nth(0), entries.nth(1)]) {
-    await expect(entry.getByText(/Organization name pending confirmation/)).toBeVisible();
-    await expect(entry.getByText(/Role pending confirmation/)).toBeVisible();
-    await expect(entry.getByText(/Location pending confirmation/)).toBeVisible();
-    await expect(entry.getByText(/date pending confirmation/i)).toBeVisible();
+  await expect(entries).toHaveCount(6);
+  await expect(entries).toContainText([
+    "VDE Americas",
+    "Smartville",
+    "Global TIES",
+    "National Renewable Energy Laboratory",
+    "UCSD Bookstore",
+    "MSi"
+  ]);
+  for (const entry of await entries.all()) {
     const marker = entry.locator(".experience-marker");
     await expect(marker).toHaveCount(1);
     await expect(marker).toHaveCSS("width", "12px");
     await expect(marker).toHaveCSS("height", "12px");
   }
+  await expect(entries.nth(0)).toContainText("Performance Engineer");
+  await expect(entries.nth(0)).toContainText("May 2024 – Present");
+  await expect(entries.nth(3)).toContainText("Mechanical Engineering Intern");
+  await expect(entries.nth(5)).toContainText("City of Industry, CA");
 
   const noScriptContext = await browser.newContext({ javaScriptEnabled: false });
   const noScriptPage = await noScriptContext.newPage();
   await noScriptPage.goto("http://127.0.0.1:4173/");
-  await expect(noScriptPage.getByRole("list", { name: "Experience Timeline" }).getByRole("listitem")).toHaveCount(2);
-  await expect(noScriptPage.getByText("Earlier entry placeholder")).toBeVisible();
+  await expect(noScriptPage.getByRole("list", { name: "Experience Timeline" }).getByRole("listitem")).toHaveCount(6);
+  await expect(noScriptPage.getByText("MSi")).toBeVisible();
   await noScriptContext.close();
 
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -317,12 +341,9 @@ test("Education Journey remains coherent when optional sections are absent", asy
   }
 });
 
-test("one Markdown Project is featured, collected, and available on its own page", async ({ page }) => {
+test("one Markdown Project is collected and available on its own page", async ({ page }) => {
   const projectTitle = "Renewable Infrastructure Field Notes";
   const projectSummary = "An honest demonstration of how a future renewable-energy Project can combine field context, engineering decisions, and community priorities.";
-
-  await page.goto("/");
-  await expect(page.getByRole("link", { name: new RegExp(projectTitle) })).toContainText(projectSummary);
 
   await page.goto("/projects/");
   await expect(page.getByRole("heading", { level: 1, name: "Project Collection" })).toBeVisible();
@@ -350,8 +371,9 @@ test("Project Collection is curated, newest-first, and labels ongoing work", asy
   await expect(cards.nth(4).getByRole("img", { name: /Representative media pending/ })).toBeVisible();
 
   await page.goto("/");
-  await expect(page.getByRole("region", { name: "Featured Projects" }).getByRole("link")).toHaveCount(3);
-  await expect(page.getByRole("link", { name: "View all projects" })).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "Featured Projects" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "View all projects" })).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/projects/");
 });
 
 test("Project Pages support varied compositions and safe rich media", async ({ page }) => {
@@ -572,6 +594,16 @@ test("wide-screen contact controls remain at the lower-right viewport edge", asy
   await page.goto("/projects/");
 
   const contactRail = page.getByRole("complementary", { name: "Contact Albert Chang" });
+  const emailControl = contactRail.getByRole("link", { name: "Email Albert Chang" });
+  const linkedInControl = contactRail.getByRole("link", { name: "Albert Chang on LinkedIn" });
+  await expect(emailControl).toHaveText("");
+  await expect(linkedInControl).toHaveText("");
+  await expect(emailControl).toHaveCSS("border-top-style", "solid");
+  await expect(linkedInControl).toHaveCSS("border-top-style", "solid");
+  const emailBox = await emailControl.boundingBox();
+  const linkedInBox = await linkedInControl.boundingBox();
+  expect(linkedInBox.y).toBeGreaterThanOrEqual(emailBox.y + emailBox.height);
+  expect(Math.abs(linkedInBox.x - emailBox.x)).toBeLessThan(1);
   const box = await contactRail.boundingBox();
   expect(box.x + box.width).toBeGreaterThan(1200);
   expect(box.y + box.height).toBeGreaterThan(720);

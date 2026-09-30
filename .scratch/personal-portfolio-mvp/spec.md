@@ -1,6 +1,8 @@
 # Personal Portfolio MVP
 
-Status: ready-for-agent
+Status: implemented
+
+Superseded in part by: `../homepage-structure-refresh/spec.md`
 
 ## Problem Statement
 
@@ -227,4 +229,3 @@ The MVP will ship with honest placeholders for content and media that Albert int
 - Light Color Mode tokens should be named semantically rather than after specific hues so a later dark mode can be designed cleanly.
 - Email, LinkedIn, portrait, final Brand Line, and final media remain replaceable content inputs rather than layout dependencies.
 - The eventual GitHub Pages configuration must account for whether the final site is a user site, a project site, or a custom-domain site.
-
