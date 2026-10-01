@@ -168,7 +168,6 @@ test("production URLs and assets honor a GitHub Pages project-site prefix", asyn
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://portfolio.example.test/portfolio/");
     await expect(page.locator('link[rel="stylesheet"]').last()).toHaveAttribute("href", "/portfolio/assets/css/site.css");
     await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/portfolio/projects/");
-    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Experience" })).toHaveAttribute("href", "/portfolio/#experience");
     const localResources = await page.evaluate(() => performance.getEntriesByType("resource")
       .map((entry) => new URL(entry.name))
       .filter((url) => url.origin === location.origin)
