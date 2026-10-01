@@ -35,12 +35,10 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page.getByRole("navigation", { name: "Primary" })).toContainText("Projects");
   await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link")).toHaveText([
     "Projects",
-    "Experience",
-    "About",
     "Education"
   ]);
   await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toHaveText(
-    "A community-centered engineer developing renewable-energy projects that turn climate goals into practical infrastructure."
+    "A community-centered engineer translating climate goals into practical infrastructure"
   );
   await expect(page.getByRole("main").getByRole("heading", { level: 2 })).toHaveText([
     "Experience",
@@ -54,7 +52,7 @@ test("visitor can understand and navigate the Professional Record homepage", asy
   await expect(page.locator("#about")).toContainText(
     "Today, I want to help close the gap between how energy systems are modeled and how they are experienced."
   );
-  await expect(page.getByRole("link", { name: "Explore my education journey" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Learn More" })).toHaveAttribute(
     "href",
     "/education/"
   );
@@ -256,6 +254,42 @@ test("site frame and power-flow motif stay intentional and clear of content", as
   expect(fragmentBox.x + fragmentBox.width).toBeLessThanOrEqual(introductionBox.x + 49);
 });
 
+test("power-flow progress tracks page scroll continuously", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+  });
+
+  for (const requestedProgress of [0.37, 0.68]) {
+    await page.evaluate((progress) => {
+      const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+      window.scrollTo(0, scrollRange * progress);
+    }, requestedProgress);
+    await page.waitForTimeout(100);
+
+    const state = await page.evaluate(() => {
+      const motif = document.querySelector('[data-visual-motif="sequence"]');
+      const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+      const dashArray = getComputedStyle(motif.querySelector(".visual-motif__energized"))
+        .getPropertyValue("stroke-dasharray");
+      return {
+        dashProgress: Number.parseFloat(dashArray.match(/[\d.]+/)?.[0]),
+        motifProgress: Number.parseFloat(getComputedStyle(motif).getPropertyValue("--motif-progress")),
+        scrollProgress: window.scrollY / scrollRange
+      };
+    });
+    expect(Math.abs(state.motifProgress - state.scrollProgress)).toBeLessThan(0.03);
+    expect(Math.abs((state.dashProgress / 100) - state.scrollProgress)).toBeLessThan(0.03);
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const mobileMotifBox = await page.locator('[data-visual-motif="sequence"]').boundingBox();
+  const mobileMainBox = await page.getByRole("main").boundingBox();
+  expect(Math.abs(mobileMotifBox.height - mobileMainBox.height)).toBeLessThan(1);
+});
+
 test("editorial palette keeps text and controls readable without color-only states", async ({ page }) => {
   await page.goto("/");
 
@@ -332,7 +366,7 @@ test("Education preview leads to a coherent Education Journey with canonical Pro
   await page.goto("/");
 
   await expect(page.getByRole("region", { name: "Education Journey preview" })).toContainText("Carnegie Mellon University");
-  await page.getByRole("link", { name: "Explore my education journey" }).click();
+  await page.getByRole("link", { name: "Learn More" }).click();
   await expect(page).toHaveURL(/\/education\/$/);
   await expect(page.getByRole("heading", { level: 1, name: "Education Journey" })).toBeVisible();
 

@@ -19,7 +19,7 @@ This specification refines the visual-system portions of `.scratch/personal-port
 
 ## Power-flow motif
 
-- The existing single-conductor idea and scroll-responsive energized flow remain recognizable.
+- The existing single-conductor idea remains recognizable, and the energized flow continuously matches normalized document scroll progress without section-sized jumps or visual lag.
 - The motif is confined to a reserved rail inside the left frame border and must never overlap readable content, media, or controls.
 - The line uses thinner strokes, gentle bends, sparse marks, and lower opacity than the original treatment.
 - The neutral conductor is approximately 70% opaque; the Carnegie Red energized portion is approximately 85% opaque.
